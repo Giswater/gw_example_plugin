@@ -144,6 +144,10 @@ FORM_CLASS = get_ui_class('dlg_boton1.ui', 'my_plugin')
 class DlgBoton1(GwDialog, FORM_CLASS):
     pass
 
+FORM_CLASS = get_ui_class('dlg_boton2.ui', 'my_plugin')
+class DlgBoton2(GwDialog, FORM_CLASS):
+    pass
+
 FORM_CLASS = get_ui_class('mincut_manager.ui', 'my_plugin')
 class MincutManager(GwDialog, FORM_CLASS):
     pass
