@@ -1,0 +1,25 @@
+# This file should be included when you package your plugin.
+# Mandatory items:
+
+[general]
+name=gw_plugin_example
+qgisMinimumVersion=3.10
+qgisMaximumVersion=3.99
+
+description=Plugin test
+about=Compatible with 3.5 giswater version
+version=0.1
+
+# End of mandatory metadata
+changelog=Init commit
+   
+# Tags are comma separated with spaces allowed
+tags= giswater, water networks, sewerage, urban drainage, EPANET, SWMM
+
+homepage=https://www.giswater.org
+repository=https://github.com/giswater/giswater_qgis_plugin
+tracker=https://github.com/giswater/giswater_qgis_plugin/issues
+category=Plugins
+icon=icons/shared/giswater.png
+experimental=True
+deprecated=False
