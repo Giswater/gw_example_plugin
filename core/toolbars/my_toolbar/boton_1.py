@@ -50,6 +50,7 @@ class MyBoton1(GwParentAction):
         try:
             # Obtenim una llista de les Features seleccionades a la capa activa del mapa
             layer = iface.activeLayer()
+            if not layer: return 
             selected_features = layer.selectedFeatures()
 
             # Revisem si l'usuari no ha seleccionat res, en aquest cas deixem d'executar
@@ -96,5 +97,5 @@ class MyBoton1(GwParentAction):
             layers.append(elem)
 
         tools_qt.fill_combo_values(self.dlg_btn1.cmb_layers, layers, 1)
-        tools_qt.set_combo_value(self.dlg_btn1.cmb_layers, 'v_edits_node', 1)
+
 
