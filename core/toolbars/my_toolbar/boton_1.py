@@ -50,7 +50,7 @@ class MyBoton1(GwParentAction):
         try:
             # Obtenim una llista de les Features seleccionades a la capa activa del mapa
             layer = iface.activeLayer()
-            if not layer: return 
+            if not layer: return
             selected_features = layer.selectedFeatures()
 
             # Revisem si l'usuari no ha seleccionat res, en aquest cas deixem d'executar
