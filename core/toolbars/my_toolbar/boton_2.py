@@ -165,10 +165,12 @@ class MyBoton2(GwParentMapTool):
 
 
     def canvasReleaseEvent(self, event):
+
         if event.button() == Qt.RightButton:
             self.cancel_map_tool()
             return
-
+        if not self.is_selecting:
+            return
         event_point = self.snapper_manager.get_event_point(event)
 
         # Snapping
@@ -176,6 +178,9 @@ class MyBoton2(GwParentMapTool):
         print(f"IS VALID -->{result.isValid()}")
         if not result.isValid():
             return
+
+
+
 
 
     def deactivate(self):
