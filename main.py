@@ -135,7 +135,6 @@ class GWPluginExample(QObject):
             plugin_toolbar.toolbar = self.iface.addToolBar(toolbar_name)
 
         plugin_toolbar.toolbar.setObjectName(toolbar_name)
-        plugin_toolbar.toolbar.setProperty('gw_name', toolbar_id)
         plugin_toolbar.list_actions = list_actions
         self.plugin_toolbars[toolbar_id] = plugin_toolbar
 
