@@ -23,7 +23,6 @@ sys.path.append(os.path.abspath('../giswater'))
 from giswater.core.toolbars.parent_dialog import GwParentAction
 from giswater.core.toolbars.parent_maptool import GwParentMapTool
 from giswater.core.utils import tools_gw
-from giswater.core.utils.tools_gw import SnappingConfigManager
 from giswater.lib import tools_qgis, tools_qt
 
 
