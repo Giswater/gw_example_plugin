@@ -104,7 +104,6 @@ class GWPluginExample(QObject):
         parent = self.iface.mainWindow()
         for plugin_toolbar in list(self.plugin_toolbars.values()):
             ag = QActionGroup(parent)
-            ag.setProperty('gw_name', 'gw_QActionGroup')
             for index_action in plugin_toolbar.list_actions:
 
                 button_def = self.settings.value(f"buttons_def/{index_action}")
