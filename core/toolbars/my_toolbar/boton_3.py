@@ -7,7 +7,7 @@ or (at your option) any later version.
 # -*- coding: utf-8 -*-
 import sys, os
 sys.path.append(os.path.abspath('../giswater'))
-from ...ui.ui_manager import DocManager
+from ...ui.ui_manager import DlgBoton3
 from giswater.core.toolbars.parent_dialog import GwParentAction
 from giswater.lib import tools_qt
 
@@ -18,6 +18,6 @@ class MyBoton3(GwParentAction):
 
 
     def clicked_event(self):
-        self.dlg_manager = DocManager()
-        tools_qt.fill_table(self.dlg_manager.tbl_document, "ws_sample.arc")
-        self.dlg_manager.open()
+        self.dlg_btn3 = DlgBoton3()
+        tools_qt.fill_table(self.dlg_btn3.tbl_layer_info, "ws_sample.arc")
+        self.dlg_btn3.open()
