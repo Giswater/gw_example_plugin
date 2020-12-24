@@ -12,18 +12,17 @@ from enum import Enum
 from functools import partial
 
 from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtGui import QColor
 
-from qgis.utils import iface
-from qgis.gui import QgsMapTool
-
+from qgis.gui import QgsMapToolEmitPoint, QgsVertexMarker
 from ...ui.ui_manager import DlgBoton2
 
 sys.path.append(os.path.abspath('../giswater'))
 
 from giswater.core.toolbars.parent_dialog import GwParentAction
-from giswater.core.toolbars.parent_maptool import GwParentMapTool
 from giswater.core.utils import tools_gw
 from giswater.lib import tools_qgis, tools_qt
+from giswater.core.utils.tools_gw_snap_manager import GwSnapManager
 
 
 class SelectionType(Enum):
@@ -31,21 +30,19 @@ class SelectionType(Enum):
     ALL = 1
 
 
-class MyBoton2(GwParentMapTool):
+# TODO: comprobar si se cierra bien la map tool o no
+# TODO: comprobar si se restablece correctamente la configuracion de usuario
+# TODO: limpiar, ordenar y comentar codigo
+# TODO: mirate como funcionan los radiobuttons, hay mas formas
 
+
+class MyBoton2(GwParentAction):
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
-        self.dlg_btn2 = None
-        self.is_selecting = False
-        self.selection_type = SelectionType.ACTIVE
         super().__init__(icon_path, action_name, text, toolbar, action_group)
-        # GwParentAction.__init__(self, icon_path, action_name, text, toolbar, action_group)
-        # QgsMapTool.__init__(self, self.canvas)
 
-    # def activate(self):
-    #     QgsMapTool.activate(self)
-    #     print("TEST 1")
-    def open_dlg(self):
-        print("TEST")
+
+    def clicked_event(self):
+        self.selection_type = SelectionType.ACTIVE
         self.dlg_btn2 = DlgBoton2()
         tools_gw.load_settings(self.dlg_btn2)
 
@@ -55,15 +52,17 @@ class MyBoton2(GwParentMapTool):
 
         # Secció: activar l'estat de "seleccionant al mapa"
         self.dlg_btn2.btn_select.clicked.connect(self.selection_start)
-
+        self.dlg_btn2.btn_cancel.clicked.connect(self.deactivate_signals)
+        self.dlg_btn2.btn_cancel.clicked.connect(lambda: self.dlg_btn2.rdb_layers_active.setEnabled(True))
+        self.dlg_btn2.btn_cancel.clicked.connect(lambda: self.dlg_btn2.rdb_layers_all.setEnabled(True))
         # Secció: sortida
         self.dlg_btn2.btn_close.clicked.connect(self.dlg_btn2.close)
+        self.dlg_btn2.rejected.connect(partial(tools_gw.save_settings, self.dlg_btn2))
 
         self.refresh_selection_type()
 
         tools_gw.open_dialog(self.dlg_btn2)
-        # tools_qgis.enable_python_console()
-        self.deactivate()
+
 
     def selection_type_changed(self, new_type):
         self.selection_type = SelectionType(new_type)
@@ -91,98 +90,111 @@ class MyBoton2(GwParentMapTool):
         self.dlg_btn2.rdb_layers_all.setEnabled(False)
         # self.dlg_btn2.btn_select.setEnabled(False)
         #
-        # if self.selection_type == SelectionType.ACTIVE:
-        #     tools_qgis.manage_snapping_layer(iface.activeLayer())
 
-
-        # Check button
-        self.action.setChecked(True)
-
+        self.emit_point = QgsMapToolEmitPoint(self.canvas)
+        self.canvas.setMapTool(self.emit_point)
+        # Snapper
+        self.snapper_manager = GwSnapManager(self.iface)
+        self.snapper = self.snapper_manager.get_snapper()
+        # Vertex marker
+        self.vertex_marker = QgsVertexMarker(self.canvas)
+        self.vertex_marker.setColor(QColor(255, 100, 255))
+        self.vertex_marker.setIconSize(15)
+        self.vertex_marker.setIconType(QgsVertexMarker.ICON_CROSS)
+        self.vertex_marker.setPenWidth(3)
         # Store user snapping configuration
         self.previous_snapping = self.snapper_manager.get_snapping_options()
 
-        # Disable snapping
-        self.snapper_manager.enable_snapping()
+        if self.selection_type == SelectionType.ACTIVE:
+            print("TEST single")
+            self.activate_snapping(self.emit_point)
+        elif self.selection_type == SelectionType.ALL:
+            print("TEST all")
+            # Store user snapping configuration
+            if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_arc) or \
+                    tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_connec) or \
+                    tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_node):
+                self.set_user_config()
+            self.activate_snapping(self.emit_point)
 
+
+
+    def set_user_config(self):
+        print(f"set_user_config")
+        # Disable snapping
+        self.snapper_manager.set_snapping_status()
         # Set snapping to 'node', 'connec' and 'gully'
         self.snapper_manager.set_snapping_layers()
 
-        self.snapper_manager.snap_to_node()
-        self.snapper_manager.snap_to_connec()
-        self.snapper_manager.snap_to_gully()
+        if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_arc):
+            self.snapper_manager.config_snap_to_arc()
+
+        if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_connec):
+            self.snapper_manager.config_snap_to_connec()
+
+        if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_node):
+            self.snapper_manager.config_snap_to_node()
 
         self.snapper_manager.set_snap_mode()
 
-        # Change cursor
-        self.canvas.setCursor(self.cursor)
+
+    def activate_snapping(self, emit_point):
+
+        # Set signals
+        self.canvas.xyCoordinates.connect(self.canvas_move_event)
+        emit_point.canvasClicked.connect(partial(self.canvas_release_event, emit_point))
 
 
-    def selection_end(self):
-        print(f"Selection state ended")
+    def canvas_move_event(self, point):
 
-        self.is_selecting = False
-
-        tools_qt.show_info_box("Has punxat al punt ? de la capa ?. (X: ?, Y: ?)", "Fi de la selecció")
-
-    def close_dialog(self):
-        print("Dialog is closing...")
-
-        partial(tools_gw.save_settings, self.dlg_btn2)
-
-        # Desactivem el mode
-        if self.is_selecting:
-            print("Was in selection mode: deactivate snapping")
-
-    """ QgsMapTools inherited event functions """
-    def keyPressEvent(self, event):
-
-        if event.key() == Qt.Key_Escape:
-            self.cancel_map_tool()
-            return
-
-
-    def activate(self):
-
-        self.open_dlg()
-
-
-    def canvasMoveEvent(self, event):
-        if not self.is_selecting:
-            return
-        print("canvasMoveEvent")
-        # Hide marker and get coordinates
+        # Get clicked point
         self.vertex_marker.hide()
-        event_point = self.snapper_manager.get_event_point(event)
-
-        # Snapping layers 'v_edit_'
-        result = self.snapper_manager.snap_to_background_layers(event_point)
-        if result.isValid():
-            layer = self.snapper_manager.get_snapped_layer(result)
-            tablename = tools_qgis.get_layer_source_table_name(layer)
-            if tablename and 'v_edit' in tablename:
-                self.snapper_manager.add_marker(result, self.vertex_marker)
+        event_point = self.snapper_manager.get_event_point(point=point)
+        if self.selection_type == SelectionType.ACTIVE:
+            result = self.snapper_manager.snap_to_current_layer(event_point)
+        elif self.selection_type == SelectionType.ALL:
+            result = self.snapper_manager.snap_to_project_config_layers(event_point)
+        if self.snapper_manager.result_is_valid():
+            self.snapper_manager.add_marker(result, self.vertex_marker)
 
 
-    def canvasReleaseEvent(self, event):
-
-        if event.button() == Qt.RightButton:
-            self.cancel_map_tool()
-            return
-        if not self.is_selecting:
-            return
-        event_point = self.snapper_manager.get_event_point(event)
-
-        # Snapping
-        result = self.snapper_manager.snap_to_background_layers(event_point)
-        print(f"IS VALID -->{result.isValid()}")
+    def canvas_release_event(self, emit_point, point, btn):
+        if btn == Qt.RightButton:
+            if btn == Qt.RightButton:
+                tools_qgis.disconnect_snapping(False, emit_point, self.vertex_marker)
+                return
+        # Get coordinates
+        event_point = self.snapper_manager.get_event_point(point=point)
+        if self.selection_type == SelectionType.ACTIVE:
+            result = self.snapper_manager.snap_to_current_layer(event_point)
+        elif self.selection_type == SelectionType.ALL:
+            result = self.snapper_manager.snap_to_project_config_layers(event_point)
         if not result.isValid():
             return
+        layer = self.snapper_manager.get_snapped_layer(result)
+        # Get the point. Leave selection
+        snapped_feat = self.snapper_manager.get_snapped_feature(result)
+        feature_id = self.snapper_manager.get_snapped_feature_id(result)
+        snapped_point = self.snapper_manager.get_snapped_point(result)
+        layer.select([feature_id])
+        self.snapper_manager.restore_snap_options(self.previous_snapping)
+        self.deactivate_signals()
 
 
 
+    def deactivate_signals(self):
+        self.vertex_marker.hide()
+
+        try:
+            self.canvas.xyCoordinates.disconnect()
+        except TypeError:
+            pass
+
+        try:
+            self.emit_point.canvasClicked.disconnect()
+        except TypeError:
+            pass
 
 
-    def deactivate(self):
-        super().deactivate()
 
 

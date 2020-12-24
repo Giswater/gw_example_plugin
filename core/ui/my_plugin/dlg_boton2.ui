@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>370</width>
+    <width>664</width>
     <height>231</height>
    </rect>
   </property>
@@ -31,7 +31,7 @@
           <string>Fes Snapping només a la capa seleccionada.</string>
          </property>
          <property name="text">
-          <string>Capa activa</string>
+          <string>Snap to current layer</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -44,7 +44,7 @@
           <string>Fes Snapping a totes les capes.</string>
          </property>
          <property name="text">
-          <string>Totes les capes</string>
+          <string>Snap to user config</string>
          </property>
         </widget>
        </item>
@@ -103,6 +103,13 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_cancel">
+         <property name="text">
+          <string>Cancel map tool</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btn_close">
