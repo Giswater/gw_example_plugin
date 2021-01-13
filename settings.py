@@ -1,4 +1,4 @@
-import os, sys, glob
+import os, sys, glob, importlib
 
 # Pointer to the module object instance itself
 this = sys.modules[__name__]
@@ -6,16 +6,26 @@ this = sys.modules[__name__]
 # we can explicitly make assignments on it
 this.giswater_folder = None
 this.global_vars = None
+this.tools_qgis = None
+this.tools_qt = None
+this.tools_gw = None
 
 
 def init_plugin():
 
-    if this.giswater_folder is None:
-        this.giswater_folder = get_giswater_folder()
-        if this.giswater_folder is None:
-            print("Giswater plugin folder not found")
-    else:
+    if this.giswater_folder is not None:
         print("Variable giswater_folder already set")
+        return
+
+    this.giswater_folder = get_giswater_folder()
+    if this.giswater_folder is None:
+        print("Giswater plugin folder not found")
+        return
+
+    # Define imports to Giswater modules
+    this.tools_qgis = importlib.import_module('.tools_qgis', package=f'{giswater_folder}.lib')
+    this.tools_qt = importlib.import_module('.tools_qt', package=f'{giswater_folder}.lib')
+    this.tools_gw = importlib.import_module('.tools_gw', package=f'{giswater_folder}.core.utils')
 
 
 def get_giswater_folder(filename_to_find='tools_qgis.py'):

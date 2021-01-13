@@ -16,11 +16,8 @@ from qgis.PyQt.QtGui import QColor
 from qgis.gui import QgsMapToolEmitPoint, QgsVertexMarker
 from ...ui.ui_manager import DlgBoton2
 
-from ....settings import giswater_folder
+from ....settings import giswater_folder, tools_qgis, tools_qt, tools_gw
 dialog_button = importlib.import_module('.dialog_button', package=f'{giswater_folder}.core.toolbars')
-tools_qgis = importlib.import_module('.tools_qgis', package=f'{giswater_folder}.lib')
-tools_qt = importlib.import_module('.tools_qt', package=f'{giswater_folder}.lib')
-tools_gw = importlib.import_module('.tools_gw', package=f'{giswater_folder}.core.utils')
 snap_manager = importlib.import_module('.snap_manager', package=f'{giswater_folder}.core.utils')
 
 
