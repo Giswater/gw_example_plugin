@@ -5,6 +5,7 @@ General Public License as published by the Free Software Foundation, either vers
 or (at your option) any later version.
 """
 # -*- coding: utf-8 -*-
+import importlib
 import configparser
 import os.path
 import sys
@@ -17,9 +18,12 @@ from qgis.PyQt.QtWidgets import QAction, QActionGroup, QDockWidget, QToolBar, QT
 from .plugin_toolbar import PluginToolbar
 from .core.toolbars import buttons
 
-sys.path.append(os.path.abspath('../giswater'))
-from giswater.lib import tools_qt, tools_qgis
-from giswater import global_vars
+from . import settings
+giswater_folder = settings.giswater_folder
+tools_qgis = importlib.import_module('.tools_qgis', package=f'{giswater_folder}.lib')
+tools_qt = importlib.import_module('.tools_qt', package=f'{giswater_folder}.lib')
+global_vars = importlib.import_module('.global_vars', package=f'{giswater_folder}')
+
 
 class GWPluginExample(QObject):
 
@@ -58,6 +62,7 @@ class GWPluginExample(QObject):
 
     def initGui(self):
         """ Create the menu entries and toolbar icons inside the QGIS GUI """
+
         # Initialize plugin
         self.init_plugin()
 
@@ -68,13 +73,15 @@ class GWPluginExample(QObject):
         # Initialize plugin global variables
         self.plugin_dir = os.path.dirname(__file__)
         self.icon_folder = self.plugin_dir + os.sep + 'icons' + os.sep + 'toolbars' + os.sep
-
         self.plugin_name = self.get_plugin_metadata('name', 'gw_plugin_example')
         setting_file = os.path.join(self.plugin_dir, 'config', self.plugin_name + '.config')
         if not os.path.exists(setting_file):
             message = f"Config file not found at: {setting_file}"
             self.iface.messageBar().pushMessage("", message, 1, 20)
             return
+
+        global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name, None)
+
         self.settings = QSettings(setting_file, QSettings.IniFormat)
         self.settings.setIniCodec(sys.getfilesystemencoding())
 
@@ -91,8 +98,6 @@ class GWPluginExample(QObject):
         self.manage_toolbars()
 
 
-
-
     def manage_toolbars(self):
         """ Manage actions of the custom plugin toolbars.
         project_type in ('ws', 'ud')
@@ -105,19 +110,16 @@ class GWPluginExample(QObject):
         for plugin_toolbar in list(self.plugin_toolbars.values()):
             ag = QActionGroup(parent)
             for index_action in plugin_toolbar.list_actions:
-
                 button_def = self.settings.value(f"buttons_def/{index_action}")
-
                 if button_def:
                     text = f'{index_action}_text'
                     icon_path = self.icon_folder + plugin_toolbar.toolbar_id + os.sep + index_action + ".png"
                     button = getattr(buttons, button_def)(icon_path, button_def, text, plugin_toolbar.toolbar, ag)
-
                     self.buttons[index_action] = button
 
 
-
     def create_toolbar(self, toolbar_id):
+
         list_actions = self.settings.value(f"toolbars/{toolbar_id}")
         if list_actions is None:
             return
