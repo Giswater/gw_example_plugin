@@ -58,11 +58,13 @@ class MyBoton1(dialog_button.GwDialogButton):
             if len(selected_features) == 0:
                 return
 
-            list_ids = []
+            # Get primary key
+            field_id = tools_gw.execute_procedure('gw_fct_getpkeyfield', f"'{layer.name()}'")
 
+            list_ids = []
             # Desem l'ID de l'últim Feature seleccionat i ho mostrem a la consola
             for i in selected_features:
-                attr_id = i.attribute("node_id")
+                attr_id = i.attribute(field_id)
                 list_ids.append(attr_id)
 
             tools_qt.set_widget_text(self.dlg_btn1, self.dlg_btn1.lbl_selected_items, ','.join(list_ids))
