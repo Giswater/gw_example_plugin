@@ -19,7 +19,7 @@ sys.path.append(os.path.abspath('../giswater'))
 from giswater.core.toolbars.dialog_button import GwDialogButton
 from giswater.core.utils import tools_gw
 from giswater.lib import tools_qgis, tools_qt
-from giswater.core.utils.tools_gw_snap_manager import GwSnapManager
+from giswater.core.utils.snap_manager import GwSnapManager
 
 
 class SelectionType(Enum):
