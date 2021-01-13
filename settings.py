@@ -1,3 +1,14 @@
+"""
+This file is part of Giswater plugin example
+The program is free software: you can redistribute it and/or modify it under the terms of the GNU 
+General Public License as published by the Free Software Foundation, either version 3 of the License, 
+or (at your option) any later version.
+
+Author(s): Iván Moreno, Nestor Ibáñez
+
+"""
+# -*- coding: utf-8 -*-
+
 import configparser, os, sys, glob, importlib
 
 # Pointer to the module object instance itself
@@ -6,6 +17,10 @@ this = sys.modules[__name__]
 # we can explicitly make assignments on it
 this.giswater_folder = None
 this.global_vars = None
+this.tools_config = None
+this.tools_db = None
+this.tools_log = None
+this.tools_os = None
 this.tools_qgis = None
 this.tools_qt = None
 this.tools_gw = None
@@ -22,7 +37,11 @@ def init_plugin():
         print("Giswater plugin folder not found")
         return
 
-    # Define imports to Giswater modules
+    # Define imports from Giswater modules
+	this.tools_config = importlib.import_module('.tools_config', package=f'{this.giswater_folder}.lib')
+	this.tools_db = importlib.import_module('.tools_db', package=f'{this.giswater_folder}.lib')
+	this.tools_log = importlib.import_module('.tools_log', package=f'{this.giswater_folder}.lib')
+	this.tools_os = importlib.import_module('.tools_os', package=f'{this.giswater_folder}.lib')
     this.tools_qgis = importlib.import_module('.tools_qgis', package=f'{this.giswater_folder}.lib')
     this.tools_qt = importlib.import_module('.tools_qt', package=f'{this.giswater_folder}.lib')
     this.tools_gw = importlib.import_module('.tools_gw', package=f'{this.giswater_folder}.core.utils')
