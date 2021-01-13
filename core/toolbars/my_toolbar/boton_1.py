@@ -90,14 +90,12 @@ class MyBoton1(dialog_button.GwDialogButton):
 
     def fill_combo_layers(self):
 
-        lyrs = tools_qgis.get_visible_layers(True)
-        lyrs = lyrs.replace("[", "")
-        lyrs = lyrs.replace("]", "")
-        lyrs = lyrs.replace('"', '')
-        lyrs = list(lyrs.split(", "))
+        visible_layers = tools_qgis.get_visible_layers(False, True)
+
         layers = [["", ""]]
-        for l in list(lyrs):
-            layer = tools_qgis.get_layer_by_tablename(l)
+        for lyr in visible_layers:
+
+            layer = tools_qgis.get_layer_by_tablename(lyr)
             elem = [layer, layer.name()]
             layers.append(elem)
 
