@@ -5,21 +5,22 @@ General Public License as published by the Free Software Foundation, either vers
 or (at your option) any later version.
 """
 # -*- coding: utf-8 -*-
+import importlib
 import os, sys
-
 from functools import partial
+
 from qgis.core import QgsVectorLayer
 from qgis.utils import iface
 
 from ...ui.ui_manager import DlgBoton1
+from ....settings import giswater_folder
+dialog_button = importlib.import_module('.dialog_button', package=f'{giswater_folder}.core.toolbars')
+tools_qgis = importlib.import_module('.tools_qgis', package=f'{giswater_folder}.lib')
+tools_qt = importlib.import_module('.tools_qt', package=f'{giswater_folder}.lib')
+tools_gw = importlib.import_module('.tools_gw', package=f'{giswater_folder}.core.utils')
 
-sys.path.append(os.path.abspath('../giswater'))
-from giswater.core.toolbars.dialog_button import GwDialogButton
-from giswater.lib import tools_qgis, tools_qt
-from giswater.core.utils import tools_gw
 
-
-class MyBoton1(GwDialogButton):
+class MyBoton1(dialog_button.GwDialogButton):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)
