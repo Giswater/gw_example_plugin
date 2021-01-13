@@ -35,9 +35,8 @@ class GWPluginExample(QObject):
         :type iface: QgsInterface
         """
         # Initialize instance attributes
-        self.iface = iface
-
         super(GWPluginExample, self).__init__()
+        self.iface = iface
         self.plugin_toolbars = {}
         self.buttons = {}
         self.srid = None
