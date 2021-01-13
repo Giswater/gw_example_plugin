@@ -34,12 +34,12 @@ class GWPluginExample(QObject):
             application at run time.
         :type iface: QgsInterface
         """
+        # Initialize instance attributes
+        self.iface = iface
 
         super(GWPluginExample, self).__init__()
         self.plugin_toolbars = {}
         self.buttons = {}
-        # Initialize instance attributes
-        self.iface = iface
         self.srid = None
         self.load_project = None
         self.dict_toolbars = {}
@@ -73,7 +73,7 @@ class GWPluginExample(QObject):
         # Initialize plugin global variables
         self.plugin_dir = os.path.dirname(__file__)
         self.icon_folder = self.plugin_dir + os.sep + 'icons' + os.sep + 'toolbars' + os.sep
-        self.plugin_name = self.get_plugin_metadata('name', 'gw_plugin_example')
+        self.plugin_name = self.get_plugin_metadata('name', 'giswater_plugin_example')
         setting_file = os.path.join(self.plugin_dir, 'config', self.plugin_name + '.config')
         if not os.path.exists(setting_file):
             message = f"Config file not found at: {setting_file}"
