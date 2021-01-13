@@ -75,7 +75,7 @@ class MyBoton1(dialog_button.GwDialogButton):
         finally:
             # Tanquem la subscripció de l'event per evitar la duplicació
             iface.mapCanvas().selectionChanged.disconnect(self.selection_changed)
-
+            iface.actionPan().trigger()
 
     def set_active_layer(self):
 
