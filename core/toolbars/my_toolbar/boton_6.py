@@ -12,19 +12,19 @@ from functools import partial
 from ...ui.ui_manager import DlgConfigVars
 
 sys.path.append(os.path.abspath('../giswater'))
-from giswater.core.toolbars.parent_dialog import GwParentAction
+from giswater.core.toolbars.dialog_button import GwDialogButton
 from giswater.core.utils import tools_gw
 from giswater.lib import tools_qgis, tools_qt
 
 
-
-
-class MyBoton6(GwParentAction):
+class MyBoton6(GwDialogButton):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)
 
+
     def clicked_event(self):
+
         dlg_config = DlgConfigVars()
         tools_gw.load_settings(dlg_config)
         dlg_config.rejected.connect(partial(tools_gw.save_settings, dlg_config))
@@ -35,6 +35,7 @@ class MyBoton6(GwParentAction):
 
 
     def save_values(self, dialog):
+
         # \users\user\giswater\config/session.config
         value = tools_qt.get_text(dialog, dialog.txt_user_config, False, False)
         tools_gw.set_config_parser('docker', 'position', value, None, 'user', 'user')

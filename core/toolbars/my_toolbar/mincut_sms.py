@@ -12,17 +12,15 @@ import sys
 from collections import OrderedDict
 from functools import partial
 
-
 from ...ui.ui_manager import MincutManager
 sys.path.append(os.path.abspath('../giswater'))
 from giswater.core.shared.mincut import GwMincut
-from giswater.core.toolbars.parent_dialog import GwParentAction
+from giswater.core.toolbars.dialog_button import GwDialogButton
 from giswater.core.utils import tools_gw
 from giswater.lib import tools_db, tools_qt
 
 
-
-class MincutSms(GwParentAction):
+class MincutSms(GwDialogButton):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)

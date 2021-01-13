@@ -5,7 +5,6 @@ General Public License as published by the Free Software Foundation, either vers
 or (at your option) any later version.
 """
 # -*- coding: utf-8 -*-
-
 import os, sys
 
 from functools import partial
@@ -15,17 +14,19 @@ from qgis.utils import iface
 from ...ui.ui_manager import DlgBoton1
 
 sys.path.append(os.path.abspath('../giswater'))
-from giswater.core.toolbars.parent_dialog import GwParentAction
+from giswater.core.toolbars.dialog_button import GwDialogButton
 from giswater.lib import tools_qgis, tools_qt
 from giswater.core.utils import tools_gw
 
 
-class MyBoton1(GwParentAction):
+class MyBoton1(GwDialogButton):
+
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)
 
 
     def clicked_event(self):
+
         self.dlg_btn1 = DlgBoton1()
         tools_gw.load_settings(self.dlg_btn1)
         self.dlg_btn1.rejected.connect(partial(tools_gw.save_settings, self.dlg_btn1))
@@ -39,6 +40,7 @@ class MyBoton1(GwParentAction):
 
 
     def selection_init(self):
+
         # Fem que l'eina de selecció estigui activa
         iface.actionSelect().trigger()
 
@@ -47,6 +49,7 @@ class MyBoton1(GwParentAction):
 
 
     def selection_changed(self) -> None:
+
         try:
             # Obtenim una llista de les Features seleccionades a la capa activa del mapa
             layer = iface.activeLayer()
@@ -75,6 +78,7 @@ class MyBoton1(GwParentAction):
 
 
     def set_active_layer(self):
+
         print("activar seleccion sobre la capa seleccionada")
         layer = tools_qt.get_combo_value(self.dlg_btn1, self.dlg_btn1.cmb_layers, 0)
         if type(layer) != QgsVectorLayer:
@@ -85,6 +89,7 @@ class MyBoton1(GwParentAction):
 
 
     def fill_combo_layers(self):
+
         lyrs = tools_qgis.get_visible_layers(True)
         lyrs = lyrs.replace("[", "")
         lyrs = lyrs.replace("]", "")
@@ -97,5 +102,4 @@ class MyBoton1(GwParentAction):
             layers.append(elem)
 
         tools_qt.fill_combo_values(self.dlg_btn1.cmb_layers, layers, 1)
-
 

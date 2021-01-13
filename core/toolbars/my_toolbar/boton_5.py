@@ -10,16 +10,17 @@ sys.path.append(os.path.abspath('../giswater'))
 
 from qgis.PyQt.QtCore import Qt
 
-from giswater.core.toolbars.parent_maptool import GwParentMapTool
+from giswater.core.toolbars.maptool_button import GwMaptoolButton
 from giswater.core.utils import tools_gw
 from giswater.lib import tools_qt
-from giswater.core.toolbars.basic import btn_info
+from giswater.core.toolbars.basic import info_btn
 from giswater.core.shared import info
 
 
-class MyBoton5(GwParentMapTool):
+class MyBoton5(GwMaptoolButton):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
+
         # super().__init__(icon_path, action_name, text, toolbar, action_group)
         self.icon_path = icon_path
         self.action_name = action_name
@@ -27,7 +28,8 @@ class MyBoton5(GwParentMapTool):
         self.toolbar = toolbar
         self.action_group = action_group
 
-        GwInfo = btn_info.GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
+        GwInfo = info_btn.GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
+
 
     """ QgsMapTools inherited event functions """
     def activate(self):
@@ -36,15 +38,11 @@ class MyBoton5(GwParentMapTool):
     def canvasMoveEvent(self, event):
         pass
 
-
     def canvasReleaseEvent(self, event):
-
         print("CANVAS RE")
 
-
-
     def keyPressEvent(self, event):
-
         if event.key() == Qt.Key_Escape:
             self.action.trigger()
             return
+

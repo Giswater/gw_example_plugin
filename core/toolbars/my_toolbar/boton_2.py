@@ -7,19 +7,16 @@ or (at your option) any later version.
 # -*- coding: utf-8 -*-
 import sys
 import os
-
 from enum import Enum
 from functools import partial
 
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
-
 from qgis.gui import QgsMapToolEmitPoint, QgsVertexMarker
 from ...ui.ui_manager import DlgBoton2
 
 sys.path.append(os.path.abspath('../giswater'))
-
-from giswater.core.toolbars.parent_dialog import GwParentAction
+from giswater.core.toolbars.dialog_button import GwDialogButton
 from giswater.core.utils import tools_gw
 from giswater.lib import tools_qgis, tools_qt
 from giswater.core.utils.tools_gw_snap_manager import GwSnapManager
@@ -36,12 +33,14 @@ class SelectionType(Enum):
 # TODO: mirate como funcionan los radiobuttons, hay mas formas
 
 
-class MyBoton2(GwParentAction):
+class MyBoton2(GwDialogButton):
+
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)
 
 
     def clicked_event(self):
+
         self.selection_type = SelectionType.ACTIVE
         self.dlg_btn2 = DlgBoton2()
         tools_gw.load_settings(self.dlg_btn2)
@@ -65,12 +64,15 @@ class MyBoton2(GwParentAction):
 
 
     def selection_type_changed(self, new_type):
+
         self.selection_type = SelectionType(new_type)
         print(f"Selection type changed to { SelectionType(new_type) }")
 
         self.refresh_selection_type()
 
+
     def refresh_selection_type(self):
+
         if self.selection_type == SelectionType.ACTIVE:
             self.dlg_btn2.chk_layer_arc.setEnabled(False)
             self.dlg_btn2.chk_layer_connec.setEnabled(False)
@@ -82,6 +84,7 @@ class MyBoton2(GwParentAction):
 
 
     def selection_start(self):
+
         print(f"Selection state started")
 
         self.is_selecting = True
@@ -94,7 +97,7 @@ class MyBoton2(GwParentAction):
         self.emit_point = QgsMapToolEmitPoint(self.canvas)
         self.canvas.setMapTool(self.emit_point)
         # Snapper
-        self.snapper_manager = GwSnapManager(self.iface)
+        self.snapper_manager = snap_manager.GwSnapManager(self.iface)
         self.snapper = self.snapper_manager.get_snapper()
         # Vertex marker
         self.vertex_marker = QgsVertexMarker(self.canvas)
@@ -118,8 +121,8 @@ class MyBoton2(GwParentAction):
             self.activate_snapping(self.emit_point)
 
 
-
     def set_user_config(self):
+
         print(f"set_user_config")
         # Disable snapping
         self.snapper_manager.set_snapping_status()
@@ -159,10 +162,12 @@ class MyBoton2(GwParentAction):
 
 
     def canvas_release_event(self, emit_point, point, btn):
+
         if btn == Qt.RightButton:
             if btn == Qt.RightButton:
                 tools_qgis.disconnect_snapping(False, emit_point, self.vertex_marker)
                 return
+
         # Get coordinates
         event_point = self.snapper_manager.get_event_point(point=point)
         if self.selection_type == SelectionType.ACTIVE:
@@ -171,6 +176,7 @@ class MyBoton2(GwParentAction):
             result = self.snapper_manager.snap_to_project_config_layers(event_point)
         if not result.isValid():
             return
+
         layer = self.snapper_manager.get_snapped_layer(result)
         # Get the point. Leave selection
         snapped_feat = self.snapper_manager.get_snapped_feature(result)
@@ -181,10 +187,9 @@ class MyBoton2(GwParentAction):
         self.deactivate_signals()
 
 
-
     def deactivate_signals(self):
-        self.vertex_marker.hide()
 
+        self.vertex_marker.hide()
         try:
             self.canvas.xyCoordinates.disconnect()
         except TypeError:
@@ -194,7 +199,4 @@ class MyBoton2(GwParentAction):
             self.emit_point.canvasClicked.disconnect()
         except TypeError:
             pass
-
-
-
 
