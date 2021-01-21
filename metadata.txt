@@ -3,12 +3,12 @@
 
 [general]
 name=giswater_plugin_example
-qgisMinimumVersion=3.10
+qgisMinimumVersion=3.10.13
 qgisMaximumVersion=3.99
 
 description=Plugin test
 about=Compatible with 3.5 giswater version
-version=0.1
+version=1.1.01
 
 # End of mandatory metadata
 changelog=Init commit

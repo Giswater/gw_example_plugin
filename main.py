@@ -17,12 +17,9 @@ from qgis.PyQt.QtWidgets import QAction, QActionGroup, QDockWidget, QToolBar, QT
 
 from .plugin_toolbar import PluginToolbar
 from .core.toolbars import buttons
+from . import global_vars
 
-from . import settings
-giswater_folder = settings.giswater_folder
-tools_qgis = importlib.import_module('.tools_qgis', package=f'{giswater_folder}.lib')
-tools_qt = importlib.import_module('.tools_qt', package=f'{giswater_folder}.lib')
-global_vars = importlib.import_module('.global_vars', package=f'{giswater_folder}')
+from .settings import tools_qgis, tools_os
 
 
 class GWPluginExample(QObject):
@@ -73,13 +70,15 @@ class GWPluginExample(QObject):
         self.plugin_dir = os.path.dirname(__file__)
         self.icon_folder = self.plugin_dir + os.sep + 'icons' + os.sep + 'toolbars' + os.sep
         self.plugin_name = self.get_plugin_metadata('name', 'giswater_plugin_example')
-        setting_file = os.path.join(self.plugin_dir, 'config', self.plugin_name + '.config')
+        setting_file = os.path.join(self.plugin_dir, 'config', 'init.config')
         if not os.path.exists(setting_file):
             message = f"Config file not found at: {setting_file}"
             self.iface.messageBar().pushMessage("", message, 1, 20)
             return
 
         global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name, None)
+        higher_version = tools_qgis.get_higher_version('1.1', self.plugin_dir)
+        global_vars.roaming_user_dir = f'{tools_os.get_datadir()}{os.sep}{self.plugin_name.capitalize()}{os.sep}{higher_version}'
 
         self.settings = QSettings(setting_file, QSettings.IniFormat)
         self.settings.setIniCodec(sys.getfilesystemencoding())

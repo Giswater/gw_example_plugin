@@ -8,37 +8,21 @@ or (at your option) any later version.
 import json
 import os
 import subprocess
-import sys
 from collections import OrderedDict
 from functools import partial
 
-from ...ui.ui_manager import MincutManager
-sys.path.append(os.path.abspath('../giswater'))
-from giswater.core.shared.mincut import GwMincut
-from giswater.core.toolbars.dialog_button import GwDialogButton
-from giswater.core.utils import tools_gw
-from giswater.lib import tools_db, tools_qt
+from ...ui.ui_manager import MincutUi
+from ....settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog_button
 
 
-class MincutSms(GwDialogButton):
+class MincutManagerSms(dialog_button.GwDialogButton):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)
 
     def clicked_event(self):
-        self.mincut = GwMincut()
-        self.mincut.mg_mincut_management(MincutManager())
-        self.dlg_mincut_man = self.mincut.mincut_config.dlg_min_edit
-
-        btn_notify = self.dlg_mincut_man.btn_notify
-        btn_notify.clicked.connect(partial(self.get_clients_codes, self.dlg_mincut_man.tbl_mincut_edit))
-        tools_gw.add_icon(btn_notify, "307")
-        try:
-            row = tools_gw.get_config('om_mincut_enable_alerts', 'value', 'config_param_system')
-            if row:
-                self.custom_action_sms = json.loads(row[0], object_pairs_hook=OrderedDict)
-        except KeyError as e:
-            print(f"EXCEPTION: {type(e).__name__}, {e}")
+        self.mincut = mincut.GwMincut()
+        self.mincut.get_mincut(MincutUi)
 
 
     def get_clients_codes(self, qtable):
@@ -46,7 +30,7 @@ class MincutSms(GwDialogButton):
         selected_list = qtable.selectionModel().selectedRows()
         if len(selected_list) == 0:
             message = "Any record selected"
-            tools_gw.show_warning(message)
+            tools_qgis.show_warning(message)
             return
 
         field_code = self.custom_action_sms['field_code']
@@ -71,7 +55,7 @@ class MincutSms(GwDialogButton):
 
         inf_text = inf_text[:-2]
         inf_text += "\n"
-        answer = tools_qt.ask_question(str(inf_text))
+        answer = tools_qt.show_question(str(inf_text))
         if answer:
             self.call_sms_script(qtable)
 
@@ -80,7 +64,7 @@ class MincutSms(GwDialogButton):
 
         path = self.custom_action_sms['path_sms_script']
         if path is None or not os.path.exists(path):
-            tools_gw.show_warning("File not found", parameter=path)
+            tools_qgis.show_warning("File not found", parameter=path)
             return
 
         selected_list = qtable.selectionModel().selectedRows()
@@ -121,5 +105,5 @@ class MincutSms(GwDialogButton):
             print(f"-->{result}<--")
 
             # Set a model with selected filter. Attach that model to selected table
-            self.mincut.mincut_config.fill_table_mincut_management(qtable, self.schema_name + ".v_ui_mincut")
+            self.mincut.mincut_tools.fill_table_mincut_management(qtable, self.schema_name + ".v_ui_mincut")
             tools_gw.set_tablemodel_config(self.dlg_mincut_man, qtable, "v_ui_mincut", sort_order=1)

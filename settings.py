@@ -16,7 +16,6 @@ this = sys.modules[__name__]
 
 # we can explicitly make assignments on it
 this.giswater_folder = None
-this.global_vars = None
 this.tools_config = None
 this.tools_db = None
 this.tools_log = None
@@ -24,6 +23,8 @@ this.tools_os = None
 this.tools_qgis = None
 this.tools_qt = None
 this.tools_gw = None
+this.mincut = None
+this.dialog_button = None
 
 
 def init_plugin():
@@ -38,13 +39,15 @@ def init_plugin():
         return
 
     # Define imports from Giswater modules
-	this.tools_config = importlib.import_module('.tools_config', package=f'{this.giswater_folder}.lib')
-	this.tools_db = importlib.import_module('.tools_db', package=f'{this.giswater_folder}.lib')
-	this.tools_log = importlib.import_module('.tools_log', package=f'{this.giswater_folder}.lib')
-	this.tools_os = importlib.import_module('.tools_os', package=f'{this.giswater_folder}.lib')
+    this.tools_config = importlib.import_module('.tools_config', package=f'{this.giswater_folder}.lib')
+    this.tools_db = importlib.import_module('.tools_db', package=f'{this.giswater_folder}.lib')
+    this.tools_log = importlib.import_module('.tools_log', package=f'{this.giswater_folder}.lib')
+    this.tools_os = importlib.import_module('.tools_os', package=f'{this.giswater_folder}.lib')
     this.tools_qgis = importlib.import_module('.tools_qgis', package=f'{this.giswater_folder}.lib')
     this.tools_qt = importlib.import_module('.tools_qt', package=f'{this.giswater_folder}.lib')
     this.tools_gw = importlib.import_module('.tools_gw', package=f'{this.giswater_folder}.core.utils')
+    this.dialog_button = importlib.import_module('.dialog_button', package=f'{this.giswater_folder}.core.toolbars')
+    this.mincut = importlib.import_module('.mincut', package=f'{this.giswater_folder}.core.shared')
 
 
 def get_giswater_folder(filename_to_find='metadata.txt'):
@@ -78,11 +81,5 @@ def get_giswater_folder(filename_to_find='metadata.txt'):
             return giswater_folder_name
 
     return None
-
-
-def init_global():
-
-    print(f"init_global: {this.giswater_folder}")
-    this.global_vars = importlib.import_module('.global_vars', package=f'{this.giswater_folder}')
 
 
