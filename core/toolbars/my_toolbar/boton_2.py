@@ -56,6 +56,7 @@ class MyBoton2(dialog_button.GwDialogButton):
         # Secció: sortida
         self.dlg_btn2.btn_close.clicked.connect(self.dlg_btn2.close)
         self.dlg_btn2.rejected.connect(partial(tools_gw.save_settings, self.dlg_btn2))
+        self.dlg_btn2.rejected.connect(partial(self.deactivate_signals))
 
         self.refresh_selection_type()
 
@@ -108,10 +109,10 @@ class MyBoton2(dialog_button.GwDialogButton):
         self.previous_snapping = self.snapper_manager.get_snapping_options()
 
         if self.selection_type == SelectionType.ACTIVE:
-            print("TEST single")
+            print("single selector")
             self.activate_snapping(self.emit_point)
         elif self.selection_type == SelectionType.ALL:
-            print("TEST all")
+            print("all selector")
             # Store user snapping configuration
             if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_arc) or \
                     tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_connec) or \
@@ -125,16 +126,20 @@ class MyBoton2(dialog_button.GwDialogButton):
         print(f"set_user_config")
         # Disable snapping
         self.snapper_manager.set_snapping_status()
-        # Set snapping to 'node', 'connec' and 'gully'
+
+        # Set snapping to 'arc', 'node', 'connec' and 'gully'
         self.snapper_manager.set_snapping_layers()
 
         if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_arc):
+            print("Set snap to arc")
             self.snapper_manager.config_snap_to_arc()
 
         if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_connec):
+            print("Set snap to connec")
             self.snapper_manager.config_snap_to_connec()
 
         if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_node):
+            print("Set snap to node")
             self.snapper_manager.config_snap_to_node()
 
         self.snapper_manager.set_snap_mode()
