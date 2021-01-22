@@ -67,7 +67,7 @@ class GwDialog(QDialog):
         return False
 
 
-class GwMainWindow(QMainWindow):
+class GwMainWindowDialog(QMainWindow):
 
     dlg_closed = QtCore.pyqtSignal()
     key_escape = QtCore.pyqtSignal()
@@ -152,12 +152,15 @@ class DlgBoton3(GwDialog, FORM_CLASS):
     pass
 
 FORM_CLASS = get_ui_class('mincut_manager.ui', 'my_plugin')
-class MincutManager(GwDialog, FORM_CLASS):
+class MincutManagerUi(GwDialog, FORM_CLASS):
     pass
 
 FORM_CLASS = get_ui_class('mincut.ui', 'my_plugin')
-class MincutUi(GwDialog, FORM_CLASS):
-    pass
+class MincutUi(GwMainWindowDialog, FORM_CLASS):
+    def __init__(self):
+        self.closeMainWin = False
+        self.mincutCanceled = True
+        super().__init__()
 
 FORM_CLASS = get_ui_class('config_vars.ui', 'my_plugin')
 class DlgConfigVars(GwDialog, FORM_CLASS):

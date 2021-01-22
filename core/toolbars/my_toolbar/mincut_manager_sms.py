@@ -11,7 +11,7 @@ import subprocess
 from collections import OrderedDict
 from functools import partial
 
-from ...ui.ui_manager import MincutUi
+from ...ui.ui_manager import MincutManagerUi
 from ....settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog_button
 
 
@@ -22,7 +22,19 @@ class MincutManagerSms(dialog_button.GwDialogButton):
 
     def clicked_event(self):
         self.mincut = mincut.GwMincut()
-        self.mincut.get_mincut(MincutUi)
+
+        self.mincut.manage_mincuts(MincutManagerUi())
+        self.dlg_mincut_man = self.mincut.mincut_tools.dlg_mincut_man
+
+        btn_notify = self.dlg_mincut_man.btn_notify
+        btn_notify.clicked.connect(partial(self.get_clients_codes, self.dlg_mincut_man.tbl_mincut_edit))
+        tools_gw.add_icon(btn_notify, "307")
+        try:
+            row = tools_gw.get_config_value('om_mincut_enable_alerts', 'value', 'config_param_system')
+            if row:
+                self.custom_action_sms = json.loads(row[0], object_pairs_hook=OrderedDict)
+        except KeyError as e:
+            print(f"EXCEPTION: {type(e).__name__}, {e}")
 
 
     def get_clients_codes(self, qtable):
