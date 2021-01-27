@@ -12,12 +12,12 @@ from functools import partial
 from ...ui.ui_manager import DlgConfigVars
 
 sys.path.append(os.path.abspath('../giswater'))
-from giswater.core.toolbars.dialog_button import GwDialogButton
+from giswater.core.toolbars.dialog import GwAction
 from giswater.core.utils import tools_gw
 from giswater.lib import tools_qgis, tools_qt
 
 
-class MyBoton6(GwDialogButton):
+class MyBoton6(GwAction):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)

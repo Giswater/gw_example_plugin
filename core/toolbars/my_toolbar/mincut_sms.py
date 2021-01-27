@@ -8,10 +8,10 @@ or (at your option) any later version.
 from qgis.PyQt.QtWidgets import QAction
 
 from ...ui.ui_manager import MincutUi
-from ....settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog_button
+from ....settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog
 
 
-class MincutSms(dialog_button.GwDialogButton):
+class MincutSms(dialog.GwAction):
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)
 

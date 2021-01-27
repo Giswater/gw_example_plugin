@@ -8,11 +8,11 @@ or (at your option) any later version.
 import sys, os
 sys.path.append(os.path.abspath('../giswater'))
 from ...ui.ui_manager import DlgBoton3
-from giswater.core.toolbars.dialog_button import GwDialogButton
+from giswater.core.toolbars.dialog import GwAction
 from giswater.lib import tools_qt
 
 
-class MyBoton3(GwDialogButton):
+class MyBoton3(GwAction):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)

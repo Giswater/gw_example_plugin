@@ -24,7 +24,7 @@ this.tools_qgis = None
 this.tools_qt = None
 this.tools_gw = None
 this.mincut = None
-this.dialog_button = None
+this.dialog = None
 
 
 def init_plugin():
@@ -46,7 +46,7 @@ def init_plugin():
     this.tools_qgis = importlib.import_module('.tools_qgis', package=f'{this.giswater_folder}.lib')
     this.tools_qt = importlib.import_module('.tools_qt', package=f'{this.giswater_folder}.lib')
     this.tools_gw = importlib.import_module('.tools_gw', package=f'{this.giswater_folder}.core.utils')
-    this.dialog_button = importlib.import_module('.dialog_button', package=f'{this.giswater_folder}.core.toolbars')
+    this.dialog = importlib.import_module('.dialog', package=f'{this.giswater_folder}.core.toolbars')
     this.mincut = importlib.import_module('.mincut', package=f'{this.giswater_folder}.core.shared')
 
 

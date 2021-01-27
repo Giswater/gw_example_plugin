@@ -10,14 +10,14 @@ sys.path.append(os.path.abspath('../giswater'))
 
 from qgis.PyQt.QtCore import Qt
 
-from giswater.core.toolbars.maptool_button import GwMaptoolButton
+from giswater.core.toolbars.maptool import GwMaptool
 from giswater.core.utils import tools_gw
 from giswater.lib import tools_qt
-from giswater.core.toolbars.basic import info_btn
+from giswater.core.toolbars.basic import info_button
 from giswater.core.shared import info
 
 
-class MyBoton5(GwMaptoolButton):
+class MyBoton5(GwMaptool):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
 
@@ -28,7 +28,7 @@ class MyBoton5(GwMaptoolButton):
         self.toolbar = toolbar
         self.action_group = action_group
 
-        GwInfo = info_btn.GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
+        GwInfo = info_button.GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
 
 
     """ QgsMapTools inherited event functions """

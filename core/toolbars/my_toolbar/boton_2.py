@@ -17,7 +17,7 @@ from qgis.gui import QgsMapToolEmitPoint, QgsVertexMarker
 from ...ui.ui_manager import DlgBoton2
 
 from ....settings import giswater_folder, tools_qgis, tools_qt, tools_gw
-dialog_button = importlib.import_module('.dialog_button', package=f'{giswater_folder}.core.toolbars')
+dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')
 snap_manager = importlib.import_module('.snap_manager', package=f'{giswater_folder}.core.utils')
 
 
@@ -32,7 +32,7 @@ class SelectionType(Enum):
 # TODO: mirate como funcionan los radiobuttons, hay mas formas
 
 
-class MyBoton2(dialog_button.GwDialogButton):
+class MyBoton2(dialog.GwAction):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)

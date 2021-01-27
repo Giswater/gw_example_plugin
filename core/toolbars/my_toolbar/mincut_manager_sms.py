@@ -12,10 +12,10 @@ from collections import OrderedDict
 from functools import partial
 
 from ...ui.ui_manager import MincutManagerUi
-from ....settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog_button
+from ....settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog
 
 
-class MincutManagerSms(dialog_button.GwDialogButton):
+class MincutManagerSms(dialog.GwAction):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)
