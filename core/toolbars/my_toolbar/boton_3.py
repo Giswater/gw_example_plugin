@@ -20,5 +20,5 @@ class MyBoton3(GwAction):
 
     def clicked_event(self):
         self.dlg_btn3 = DlgBoton3()
-        tools_qt.fill_table(self.dlg_btn3.tbl_layer_info, "ws_sample.arc")
+        tools_qt.fill_table(self.dlg_btn3.tbl_layer_info, "arc")
         self.dlg_btn3.open()

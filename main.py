@@ -7,6 +7,8 @@ or (at your option) any later version.
 # -*- coding: utf-8 -*-
 import importlib
 import configparser
+import console
+
 import os.path
 import sys
 from collections import OrderedDict, Counter
@@ -19,7 +21,7 @@ from .plugin_toolbar import PluginToolbar
 from .core.toolbars import buttons
 from . import global_vars
 
-from .settings import tools_qgis, tools_os
+from .settings import tools_qgis, tools_os, gw_global_vars
 
 
 class GWPluginExample(QObject):
@@ -76,9 +78,12 @@ class GWPluginExample(QObject):
             self.iface.messageBar().pushMessage("", message, 1, 20)
             return
 
+        # Need init giswater global_vars if we can inherit from GwMaptool becouse example is loader before giswater
+        gw_global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name, None)
+
         global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name, None)
-        higher_version = tools_qgis.get_higher_version('1.1', self.plugin_dir)
-        global_vars.roaming_user_dir = f'{tools_os.get_datadir()}{os.sep}{self.plugin_name.capitalize()}{os.sep}{higher_version}'
+        major_version = tools_qgis.get_major_version('1.1', self.plugin_dir)
+        global_vars.roaming_user_dir = f'{tools_os.get_datadir()}{os.sep}{self.plugin_name.capitalize()}{os.sep}{major_version}'
 
         self.settings = QSettings(setting_file, QSettings.IniFormat)
         self.settings.setIniCodec(sys.getfilesystemencoding())
@@ -91,7 +96,7 @@ class GWPluginExample(QObject):
 
         # Manage section 'toolbars' of config file
         self.manage_section_toolbars()
-
+        console.show_console()
         # PROJECT_READ
         self.manage_toolbars()
 

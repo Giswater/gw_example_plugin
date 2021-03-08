@@ -27,8 +27,11 @@ class MyBoton5(GwMaptool):
         self.text = text
         self.toolbar = toolbar
         self.action_group = action_group
+        try:
+            GwInfo = info_button.GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
+        except Exception as e:
+            print(f"EXCEPTION: {type(e).__name__}, {e}")
 
-        GwInfo = info_button.GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
 
 
     """ QgsMapTools inherited event functions """

@@ -25,7 +25,7 @@ this.tools_qt = None
 this.tools_gw = None
 this.mincut = None
 this.dialog = None
-
+this.gw_global_vars = None
 
 def init_plugin():
 
@@ -34,6 +34,7 @@ def init_plugin():
         return
 
     this.giswater_folder = get_giswater_folder()
+    print(f"this.giswater_folder --> {this.giswater_folder}")
     if this.giswater_folder is None:
         print("Giswater plugin folder not found")
         return
@@ -48,6 +49,7 @@ def init_plugin():
     this.tools_gw = importlib.import_module('.tools_gw', package=f'{this.giswater_folder}.core.utils')
     this.dialog = importlib.import_module('.dialog', package=f'{this.giswater_folder}.core.toolbars')
     this.mincut = importlib.import_module('.mincut', package=f'{this.giswater_folder}.core.shared')
+    this.gw_global_vars = importlib.import_module('.global_vars', package=f'{this.giswater_folder}')
 
 
 def get_giswater_folder(filename_to_find='metadata.txt'):
