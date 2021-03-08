@@ -21,7 +21,7 @@ from .plugin_toolbar import PluginToolbar
 from .core.toolbars import buttons
 from . import global_vars
 
-from .settings import tools_qgis, tools_os, gw_global_vars
+from .settings import tools_qgis, tools_os, gw_global_vars, giswater_folder_path
 
 
 class GWPluginExample(QObject):
@@ -79,7 +79,7 @@ class GWPluginExample(QObject):
             return
 
         # Need init giswater global_vars if we can inherit from GwMaptool becouse example is loader before giswater
-        gw_global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name, None)
+        gw_global_vars.init_global(self.iface, self.iface.mapCanvas(), giswater_folder_path, self.plugin_name, None)
 
         global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name, None)
         major_version = tools_qgis.get_major_version('1.1', self.plugin_dir)
@@ -96,7 +96,7 @@ class GWPluginExample(QObject):
 
         # Manage section 'toolbars' of config file
         self.manage_section_toolbars()
-        console.show_console()
+
         # PROJECT_READ
         self.manage_toolbars()
 
@@ -117,6 +117,7 @@ class GWPluginExample(QObject):
                 if button_def:
                     text = f'{index_action}_text'
                     icon_path = self.icon_folder + plugin_toolbar.toolbar_id + os.sep + index_action + ".png"
+                    print(buttons, button_def, icon_path, button_def, text, plugin_toolbar.toolbar, ag)
                     button = getattr(buttons, button_def)(icon_path, button_def, text, plugin_toolbar.toolbar, ag)
                     self.buttons[index_action] = button
 

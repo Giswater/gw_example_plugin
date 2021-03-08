@@ -13,7 +13,7 @@ from qgis.PyQt.QtCore import Qt
 from giswater.core.toolbars.maptool import GwMaptool
 from giswater.core.utils import tools_gw
 from giswater.lib import tools_qt
-from giswater.core.toolbars.basic import info_button
+from giswater.core.toolbars.basic.info_button import GwInfoButton
 from giswater.core.shared import info
 
 
@@ -28,7 +28,8 @@ class MyBoton5(GwMaptool):
         self.toolbar = toolbar
         self.action_group = action_group
         try:
-            GwInfo = info_button.GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
+
+            GwInfo = GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
         except Exception as e:
             print(f"EXCEPTION: {type(e).__name__}, {e}")
 

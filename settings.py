@@ -16,6 +16,7 @@ this = sys.modules[__name__]
 
 # we can explicitly make assignments on it
 this.giswater_folder = None
+this.giswater_folder_path = None
 this.tools_config = None
 this.tools_db = None
 this.tools_log = None
@@ -33,8 +34,7 @@ def init_plugin():
         print("Variable giswater_folder already set")
         return
 
-    this.giswater_folder = get_giswater_folder()
-    print(f"this.giswater_folder --> {this.giswater_folder}")
+    this.giswater_folder, this.giswater_folder_path = get_giswater_folder()
     if this.giswater_folder is None:
         print("Giswater plugin folder not found")
         return
@@ -80,7 +80,8 @@ def get_giswater_folder(filename_to_find='metadata.txt'):
         if not parser.has_option('general', 'name'): continue
         if parser['general']['name'] == 'giswater':
             giswater_folder_name = os.path.basename(os.path.dirname(filename))
-            return giswater_folder_name
+            giswater_folder_path = os.path.dirname(filename)
+            return giswater_folder_name, giswater_folder_path
 
     return None
 

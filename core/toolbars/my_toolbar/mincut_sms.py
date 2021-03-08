@@ -25,6 +25,7 @@ class MincutSms(dialog.GwAction):
         action.triggered.connect(self.show_notified_list)
 
 
+
     def show_notified_list(self):
 
         mincut_id = tools_qt.get_text(self.dlg_mincut, self.dlg_mincut.result_mincut_id)
