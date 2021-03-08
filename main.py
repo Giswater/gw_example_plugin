@@ -78,7 +78,7 @@ class GWPluginExample(QObject):
             self.iface.messageBar().pushMessage("", message, 1, 20)
             return
 
-        # Need init giswater global_vars if we can inherit from GwMaptool becouse example is loader before giswater
+        # Need init giswater global_vars if we can inherit from GwMaptool becouse example is loaded before giswater
         gw_global_vars.init_global(self.iface, self.iface.mapCanvas(), giswater_folder_path, self.plugin_name, None)
 
         global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name, None)
