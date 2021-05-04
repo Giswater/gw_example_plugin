@@ -5,14 +5,16 @@ General Public License as published by the Free Software Foundation, either vers
 or (at your option) any later version.
 """
 # -*- coding: utf-8 -*-
-import sys, os
-sys.path.append(os.path.abspath('../giswater'))
+import importlib
+import os
+import sys
+
 from ...ui.ui_manager import DlgBoton3
-from giswater.core.toolbars.dialog import GwAction
-from giswater.lib import tools_qt
+from ....settings import giswater_folder, tools_qt
+dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')
 
 
-class MyBoton3(GwAction):
+class MyBoton3(dialog.GwAction):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)

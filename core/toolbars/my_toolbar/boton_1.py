@@ -6,14 +6,15 @@ or (at your option) any later version.
 """
 # -*- coding: utf-8 -*-
 import importlib
-import os, sys
+import os
+import sys
 from functools import partial
 
 from qgis.core import QgsVectorLayer
 from qgis.utils import iface
 
 from ...ui.ui_manager import DlgBoton1
-from ....settings import giswater_folder, tools_qgis, tools_qt, tools_gw
+from ....settings import giswater_folder, tools_qgis, tools_log, tools_qt, tools_gw
 dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')
 
 
@@ -70,16 +71,16 @@ class MyBoton1(dialog.GwAction):
             tools_qt.set_widget_text(self.dlg_btn1, self.dlg_btn1.lbl_selected_items, ','.join(list_ids))
 
         except Exception as e:
-            print(f"EXCEPTION: {type(e).__name__}, {e}")
+            tools_log.log_warning(f"Exception: {type(e).__name__}, {e}")
 
         finally:
             # Tanquem la subscripció de l'event per evitar la duplicació
             iface.mapCanvas().selectionChanged.disconnect(self.selection_changed)
             iface.actionPan().trigger()
 
+
     def set_active_layer(self):
 
-        print("activar seleccion sobre la capa seleccionada")
         layer = tools_qt.get_combo_value(self.dlg_btn1, self.dlg_btn1.cmb_layers, 0)
         if type(layer) != QgsVectorLayer:
             msg = "Invalid layer"
@@ -91,10 +92,8 @@ class MyBoton1(dialog.GwAction):
     def fill_combo_layers(self):
 
         visible_layers = tools_qgis.get_visible_layers(False, True)
-
         layers = [["", ""]]
         for lyr in visible_layers:
-
             layer = tools_qgis.get_layer_by_tablename(lyr)
             elem = [layer, layer.name()]
             layers.append(elem)

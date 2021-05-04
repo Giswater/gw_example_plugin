@@ -14,12 +14,11 @@ from functools import partial
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
 from qgis.gui import QgsMapToolEmitPoint, QgsVertexMarker
-from ...ui.ui_manager import DlgBoton2
 
-from ....settings import giswater_folder, tools_qgis, tools_qt, tools_gw
+from ...ui.ui_manager import DlgBoton2
+from ....settings import giswater_folder, tools_log, tools_qgis, tools_qt, tools_gw
 dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')
 snap_manager = importlib.import_module('.snap_manager', package=f'{giswater_folder}.core.utils')
-
 
 class SelectionType(Enum):
     ACTIVE = 0
@@ -31,11 +30,13 @@ class SelectionType(Enum):
 # TODO: limpiar, ordenar y comentar codigo
 # TODO: mirate como funcionan los radiobuttons, hay mas formas
 
-
 class MyBoton2(dialog.GwAction):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
+
         super().__init__(icon_path, action_name, text, toolbar, action_group)
+        self.vertex_marker = None
+        self.emit_point = None
 
 
     def clicked_event(self):
@@ -66,8 +67,6 @@ class MyBoton2(dialog.GwAction):
     def selection_type_changed(self, new_type):
 
         self.selection_type = SelectionType(new_type)
-        print(f"Selection type changed to { SelectionType(new_type) }")
-
         self.refresh_selection_type()
 
 
@@ -85,34 +84,31 @@ class MyBoton2(dialog.GwAction):
 
     def selection_start(self):
 
-        print(f"Selection state started")
-
         self.is_selecting = True
-
         self.dlg_btn2.rdb_layers_active.setEnabled(False)
         self.dlg_btn2.rdb_layers_all.setEnabled(False)
-        # self.dlg_btn2.btn_select.setEnabled(False)
-        #
-
         self.emit_point = QgsMapToolEmitPoint(self.canvas)
         self.canvas.setMapTool(self.emit_point)
+
         # Snapper
         self.snapper_manager = snap_manager.GwSnapManager(self.iface)
         self.snapper = self.snapper_manager.get_snapper()
+
         # Vertex marker
         self.vertex_marker = QgsVertexMarker(self.canvas)
         self.vertex_marker.setColor(QColor(255, 100, 255))
         self.vertex_marker.setIconSize(15)
         self.vertex_marker.setIconType(QgsVertexMarker.ICON_CROSS)
         self.vertex_marker.setPenWidth(3)
+
         # Store user snapping configuration
         self.previous_snapping = self.snapper_manager.get_snapping_options()
 
         if self.selection_type == SelectionType.ACTIVE:
-            print("single selector")
+            tools_log.log_info("single selector")
             self.activate_snapping(self.emit_point)
         elif self.selection_type == SelectionType.ALL:
-            print("all selector")
+            tools_log.log_info("all selector")
             # Store user snapping configuration
             if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_arc) or \
                     tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_connec) or \
@@ -123,7 +119,6 @@ class MyBoton2(dialog.GwAction):
 
     def set_user_config(self):
 
-        print(f"set_user_config")
         # Disable snapping
         self.snapper_manager.set_snapping_status()
 
@@ -131,15 +126,12 @@ class MyBoton2(dialog.GwAction):
         self.snapper_manager.set_snapping_layers()
 
         if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_arc):
-            print("Set snap to arc")
             self.snapper_manager.config_snap_to_arc()
 
         if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_connec):
-            print("Set snap to connec")
             self.snapper_manager.config_snap_to_connec()
 
         if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_node):
-            print("Set snap to node")
             self.snapper_manager.config_snap_to_node()
 
         self.snapper_manager.set_snap_mode()
@@ -161,7 +153,8 @@ class MyBoton2(dialog.GwAction):
             result = self.snapper_manager.snap_to_current_layer(event_point)
         elif self.selection_type == SelectionType.ALL:
             result = self.snapper_manager.snap_to_project_config_layers(event_point)
-        if self.snapper_manager.result_is_valid():
+
+        if self.snapper_manager.result_is_valid() and result:
             self.snapper_manager.add_marker(result, self.vertex_marker)
 
 
@@ -178,6 +171,8 @@ class MyBoton2(dialog.GwAction):
             result = self.snapper_manager.snap_to_current_layer(event_point)
         elif self.selection_type == SelectionType.ALL:
             result = self.snapper_manager.snap_to_project_config_layers(event_point)
+        if result is None:
+            return
         if not result.isValid():
             return
 
@@ -193,14 +188,17 @@ class MyBoton2(dialog.GwAction):
 
     def deactivate_signals(self):
 
-        self.vertex_marker.hide()
+        if self.vertex_marker:
+            self.vertex_marker.hide()
+
         try:
             self.canvas.xyCoordinates.disconnect()
         except TypeError:
             pass
 
         try:
-            self.emit_point.canvasClicked.disconnect()
+            if self.emit_point:
+                self.emit_point.canvasClicked.disconnect()
         except TypeError:
             pass
 
