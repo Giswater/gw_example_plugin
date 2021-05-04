@@ -7,8 +7,8 @@ or (at your option) any later version.
 # -*- coding: utf-8 -*-
 from qgis.PyQt.QtWidgets import QAction
 
-from ...ui.ui_manager import MincutUi
-from ....settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog
+from core.ui.ui_manager import MincutUi
+from settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog
 
 
 class MincutSms(dialog.GwAction):

@@ -11,8 +11,8 @@ import subprocess
 from collections import OrderedDict
 from functools import partial
 
-from ...ui.ui_manager import MincutManagerUi
-from ....settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog
+from core.ui.ui_manager import MincutManagerUi
+from settings import tools_qgis, tools_qt, tools_gw, tools_db, mincut, dialog
 
 
 class MincutManagerSms(dialog.GwAction):
