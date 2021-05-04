@@ -5,22 +5,17 @@ General Public License as published by the Free Software Foundation, either vers
 or (at your option) any later version.
 """
 # -*- coding: utf-8 -*-
-import importlib
 import configparser
-import console
 import os.path
 import sys
-from collections import OrderedDict, Counter
 
 from qgis.PyQt.QtCore import QObject, QSettings
-from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QActionGroup, QDockWidget, QToolBar
 
-from .plugin_toolbar import PluginToolbar
-from .core.toolbars import buttons
 from . import global_vars
-
-from .settings import tools_log, tools_qgis, tools_os, gw_global_vars, giswater_folder_path
+from .core.plugin_toolbar import PluginToolbar
+from .core.toolbars import buttons
+from .settings import gw_global_vars, giswater_folder_path
 
 
 class GWPluginExample(QObject):
