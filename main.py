@@ -106,7 +106,9 @@ class GWPluginExample(QObject):
             for index_action in plugin_toolbar.list_actions:
                 button_def = self.settings.value(f"buttons_def/{index_action}")
                 if button_def:
-                    text = f'{index_action}_text'
+                    text = self.settings.value(f"buttons_text/{index_action}")
+                    if text is None:
+                        text = f'{index_action}_text'
                     icon_path = self.icon_folder + plugin_toolbar.toolbar_id + os.sep + index_action + ".png"
                     print(buttons, button_def, icon_path, button_def, text, plugin_toolbar.toolbar, ag)
                     button = getattr(buttons, button_def)(icon_path, button_def, text, plugin_toolbar.toolbar, ag)
