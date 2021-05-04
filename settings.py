@@ -8,6 +8,8 @@ Author(s): Iván Moreno, Nestor Ibáñez
 # -*- coding: utf-8 -*-
 import configparser, os, sys, glob, importlib
 
+from qgis.core import QgsApplication
+
 # Pointer to the module object instance itself
 this = sys.modules[__name__]
 
@@ -25,16 +27,24 @@ this.mincut = None
 this.dialog = None
 this.gw_global_vars = None
 
+
 def init_plugin():
 
     if this.giswater_folder is not None:
         print("Variable giswater_folder already set")
-        return
+        return True
 
-    this.giswater_folder, this.giswater_folder_path = get_giswater_folder()
+    this.giswater_folder_path = get_giswater_folder()
+    this.giswater_folder = os.path.basename(this.giswater_folder_path)
     if this.giswater_folder is None:
-        print("Giswater plugin folder not found")
-        return
+        print("Giswater plugin folder not set")
+        return False
+
+    if not os.path.exists(this.giswater_folder_path):
+        print(f"Giswater plugin folder not found: {this.giswater_folder_path}")
+        return False
+
+    print(f"Giswater plugin folder:\n{this.giswater_folder_path}")
 
     # Define imports from Giswater modules
     this.tools_config = importlib.import_module('.tools_config', package=f'{this.giswater_folder}.lib')
@@ -48,9 +58,11 @@ def init_plugin():
     this.mincut = importlib.import_module('.mincut', package=f'{this.giswater_folder}.core.shared')
     this.gw_global_vars = importlib.import_module('.global_vars', package=f'{this.giswater_folder}')
 
+    return True
+
 
 def get_giswater_folder(filename_to_find='metadata.txt'):
-    """ Find and return Giswater plugin folder name """
+    """ Find and return Giswater plugin folder path """
 
     # Get QGIS plugin root folder from environment variables
     qgis_plugin_root_folder = None
@@ -61,23 +73,27 @@ def get_giswater_folder(filename_to_find='metadata.txt'):
             qgis_plugin_root_folder = os.environ['QGIS_PLUGINPATH']
         elif sys.platform == "darwin":
             qgis_plugin_root_folder = os.environ['QGIS_PLUGINPATH']
-    except KeyError:
+    except KeyError as e:
         pass
 
-    # Get QGIS plugin root folder from qgis plugin path
+    list_folders = []
     if qgis_plugin_root_folder is None:
-        qgis_plugin_root_folder = os.path.dirname(os.path.dirname(__file__))
+        list_folders.append(qgis_plugin_root_folder)
 
-    # Find @filename recursively inside this folder
-    for filename in glob.glob(f"{qgis_plugin_root_folder}/**/{filename_to_find}", recursive=True):
-        parser = configparser.ConfigParser()
-        parser.read(filename)
-        if not parser.has_section('general'): continue
-        if not parser.has_option('general', 'name'): continue
-        if parser['general']['name'] == 'giswater':
-            giswater_folder_name = os.path.basename(os.path.dirname(filename))
-            giswater_folder_path = os.path.dirname(filename)
-            return giswater_folder_name, giswater_folder_path
+    profile_folder = QgsApplication.qgisSettingsDirPath()
+    profiles_plugins_folder = os.path.join(profile_folder, 'python', 'plugins')
+    list_folders.append(profiles_plugins_folder)
 
-    return None, None
+    for folder in list_folders:
+        # Find @filename recursively inside this folder
+        for filename in glob.glob(f"{folder}/**/{filename_to_find}", recursive=True):
+            parser = configparser.ConfigParser()
+            parser.read(filename)
+            if not parser.has_section('general'): continue
+            if not parser.has_option('general', 'name'): continue
+            if parser['general']['name'] == 'giswater':
+                giswater_folder_path = os.path.dirname(filename)
+                return giswater_folder_path
+
+    return None
 
