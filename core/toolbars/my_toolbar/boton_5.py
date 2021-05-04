@@ -5,48 +5,28 @@ General Public License as published by the Free Software Foundation, either vers
 or (at your option) any later version.
 """
 # -*- coding: utf-8 -*-
-import sys, os
-sys.path.append(os.path.abspath('../giswater'))
+import importlib
+import os
+import sys
 
 from qgis.PyQt.QtCore import Qt
 
-from giswater.core.toolbars.maptool import GwMaptool
-from giswater.core.utils import tools_gw
-from giswater.lib import tools_qt
-from giswater.core.toolbars.basic.info_button import GwInfoButton
-from giswater.core.shared import info
+from ....settings import giswater_folder, tools_log, tools_qgis, tools_qt, tools_gw
+maptool = importlib.import_module('.maptool', package=f'{giswater_folder}.core.toolbars')
+info_button = importlib.import_module('.info_button', package=f'{giswater_folder}.core.toolbars.basic')
 
 
-class MyBoton5(GwMaptool):
+class MyBoton5(maptool.GwMaptool):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
 
-        # super().__init__(icon_path, action_name, text, toolbar, action_group)
         self.icon_path = icon_path
         self.action_name = action_name
         self.text = text
         self.toolbar = toolbar
         self.action_group = action_group
         try:
-
-            GwInfo = GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
+            info_button.GwInfoButton(self.icon_path, self.action_name, self.text, self.toolbar, self.action_group)
         except Exception as e:
-            print(f"EXCEPTION: {type(e).__name__}, {e}")
-
-
-
-    """ QgsMapTools inherited event functions """
-    def activate(self):
-        print(f"ACTIVATE")
-
-    def canvasMoveEvent(self, event):
-        pass
-
-    def canvasReleaseEvent(self, event):
-        print("CANVAS RE")
-
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
-            self.action.trigger()
-            return
+            print(f"Exception: {type(e).__name__}, {e}")
 
