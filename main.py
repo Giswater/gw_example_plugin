@@ -6,7 +6,7 @@ or (at your option) any later version.
 """
 # -*- coding: utf-8 -*-
 import configparser
-import os.path
+import os
 import sys
 
 from qgis.PyQt.QtCore import QObject, QSettings
@@ -28,15 +28,10 @@ class GWPluginExample(QObject):
         :type iface: QgsInterface
         """
 
-        # Initialize instance attributes
         super(GWPluginExample, self).__init__()
         self.iface = iface
         self.plugin_toolbars = {}
         self.buttons = {}
-        self.load_project = None
-        self.dict_toolbars = {}
-        self.dict_actions = {}
-        self.actions_not_checkable = None
         self.action = None
 
 
@@ -61,6 +56,8 @@ class GWPluginExample(QObject):
         self.plugin_dir = os.path.dirname(__file__)
         self.icon_folder = self.plugin_dir + os.sep + 'icons' + os.sep + 'toolbars' + os.sep
         self.plugin_name = self.get_plugin_metadata('name', 'giswater_plugin_example')
+        print(f"Plugin folder: {self.plugin_dir}")
+        print(f"Plugin name:   {self.plugin_name}")
         setting_file = os.path.join(self.plugin_dir, 'config', 'init.config')
         if not os.path.exists(setting_file):
             message = f"Config file not found at: {setting_file}"
@@ -77,20 +74,30 @@ class GWPluginExample(QObject):
         self.qgis_settings = QSettings()
         self.qgis_settings.setIniCodec(sys.getfilesystemencoding())
 
-        # Manage section 'actions_list' of config file
-        self.manage_section_actions_list()
+        self.create_toolbars()
 
-        # Manage section 'toolbars' of config file
-        self.manage_section_toolbars()
-
-        # PROJECT_READ
         self.manage_toolbars()
+
+
+    def create_toolbars(self):
+        """ Create custom plugin toolbars """
+
+        # Get list of available toolbars
+        list_toolbars = self.settings.value(f"toolbars/list_toolbars")
+        if list_toolbars:
+            # Check if list_values has only one value
+            if type(list_toolbars) is str:
+                list_toolbars = [list_toolbars]
+        else:
+            print(f"Parameter 'list_toolbars' not set in section 'toolbars' of config file")
+            return
+
+        for toolbar_id in list(list_toolbars):
+            self.create_toolbar(toolbar_id)
 
 
     def manage_toolbars(self):
         """ Manage actions of the custom plugin toolbars """
-
-        self.create_toolbar('my_toolbar')
 
         # Manage action group of every toolbar
         parent = self.iface.mainWindow()
@@ -110,6 +117,7 @@ class GWPluginExample(QObject):
 
         list_actions = self.settings.value(f"toolbars/{toolbar_id}")
         if list_actions is None:
+            print(f"Toolbar '{toolbar_id}' has no action set in config file")
             return
 
         if type(list_actions) != list:
@@ -127,50 +135,6 @@ class GWPluginExample(QObject):
         plugin_toolbar.toolbar.setObjectName(toolbar_name)
         plugin_toolbar.list_actions = list_actions
         self.plugin_toolbars[toolbar_id] = plugin_toolbar
-
-
-    def manage_section_actions_list(self):
-        """ Manage section 'actions_list' of config file """
-
-        # Dynamically get parameters defined in section 'actions_list'
-        section = 'actions_not_checkable'
-        self.settings.beginGroup(section)
-        list_keys = self.settings.allKeys()
-        self.settings.endGroup()
-
-        for key in list_keys:
-            list_values = self.settings.value(f"{section}/{key}")
-            if list_values:
-                self.dict_actions[key] = list_values
-            else:
-                print(f"Parameter not set in section '{section}' of config file: '{key}'")
-
-        # Get list of actions not checkable (normally because they open a form)
-        aux = []
-        for list_actions in self.dict_actions.values():
-            for elem in list_actions:
-                aux.append(elem)
-
-        self.actions_not_checkable = sorted(aux)
-
-
-    def manage_section_toolbars(self):
-        """ Manage section 'toolbars' of config file """
-
-        # Dynamically get parameters defined in section 'toolbars'
-        section = 'toolbars'
-        self.settings.beginGroup(section)
-        list_keys = self.settings.allKeys()
-        self.settings.endGroup()
-        for key in list_keys:
-            list_values = self.settings.value(f"{section}/{key}")
-            if list_values:
-                # Check if list_values has only one value
-                if type(list_values) is str:
-                    list_values = [list_values]
-                self.dict_toolbars[key] = list_values
-            else:
-                print(f"Parameter not set in section '{section}' of config file: '{key}'")
 
 
     def get_plugin_metadata(self, parameter, default_value):
