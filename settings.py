@@ -3,12 +3,9 @@ This file is part of Giswater plugin example
 The program is free software: you can redistribute it and/or modify it under the terms of the GNU 
 General Public License as published by the Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
-
 Author(s): Iván Moreno, Nestor Ibáñez
-
 """
 # -*- coding: utf-8 -*-
-
 import configparser, os, sys, glob, importlib
 
 # Pointer to the module object instance itself
@@ -65,7 +62,6 @@ def get_giswater_folder(filename_to_find='metadata.txt'):
         elif sys.platform == "darwin":
             qgis_plugin_root_folder = os.environ['QGIS_PLUGINPATH']
     except KeyError:
-        # Key not found
         pass
 
     # Get QGIS plugin root folder from qgis plugin path
@@ -83,6 +79,5 @@ def get_giswater_folder(filename_to_find='metadata.txt'):
             giswater_folder_path = os.path.dirname(filename)
             return giswater_folder_name, giswater_folder_path
 
-    return None
-
+    return None, None
 

@@ -8,20 +8,19 @@ or (at your option) any later version.
 import importlib
 import configparser
 import console
-
 import os.path
 import sys
 from collections import OrderedDict, Counter
 
 from qgis.PyQt.QtCore import QObject, QSettings
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QActionGroup, QDockWidget, QToolBar, QToolButton
+from qgis.PyQt.QtWidgets import QActionGroup, QDockWidget, QToolBar
 
 from .plugin_toolbar import PluginToolbar
 from .core.toolbars import buttons
 from . import global_vars
 
-from .settings import tools_qgis, tools_os, gw_global_vars, giswater_folder_path
+from .settings import tools_log, tools_qgis, tools_os, gw_global_vars, giswater_folder_path
 
 
 class GWPluginExample(QObject):
@@ -33,22 +32,17 @@ class GWPluginExample(QObject):
             application at run time.
         :type iface: QgsInterface
         """
+
         # Initialize instance attributes
         super(GWPluginExample, self).__init__()
         self.iface = iface
         self.plugin_toolbars = {}
         self.buttons = {}
-        self.srid = None
         self.load_project = None
         self.dict_toolbars = {}
         self.dict_actions = {}
         self.actions_not_checkable = None
-        self.available_layers = []
-        self.btn_add_layers = None
-        self.update_sql = None
         self.action = None
-        self.action_info = None
-        self.toolButton = None
 
 
     def unload(self, remove_modules=True):
@@ -81,13 +75,10 @@ class GWPluginExample(QObject):
         # Need init giswater global_vars if we can inherit from GwMaptool becouse example is loaded before giswater
         gw_global_vars.init_global(self.iface, self.iface.mapCanvas(), giswater_folder_path, self.plugin_name, None)
 
-        global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name, None)
-        major_version = tools_qgis.get_major_version('1.1', self.plugin_dir)
-        global_vars.roaming_user_dir = f'{tools_os.get_datadir()}{os.sep}{self.plugin_name.capitalize()}{os.sep}{major_version}'
+        global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name)
 
         self.settings = QSettings(setting_file, QSettings.IniFormat)
         self.settings.setIniCodec(sys.getfilesystemencoding())
-
         self.qgis_settings = QSettings()
         self.qgis_settings.setIniCodec(sys.getfilesystemencoding())
 
@@ -102,9 +93,7 @@ class GWPluginExample(QObject):
 
 
     def manage_toolbars(self):
-        """ Manage actions of the custom plugin toolbars.
-        project_type in ('ws', 'ud')
-        """
+        """ Manage actions of the custom plugin toolbars """
 
         self.create_toolbar('my_toolbar')
 
