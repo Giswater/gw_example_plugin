@@ -15,7 +15,7 @@ from qgis.PyQt.QtWidgets import QActionGroup, QDockWidget, QToolBar
 from . import global_vars
 from .core.plugin_toolbar import PluginToolbar
 from .core.toolbars import buttons
-from .settings import gw_global_vars, giswater_folder_path
+from .settings import gw_global_vars, giswater_folder_path, tools_log
 
 
 class GWPluginExample(QObject):
@@ -56,8 +56,8 @@ class GWPluginExample(QObject):
         self.plugin_dir = os.path.dirname(__file__)
         self.icon_folder = self.plugin_dir + os.sep + 'icons' + os.sep + 'toolbars' + os.sep
         self.plugin_name = self.get_plugin_metadata('name', 'giswater_plugin_example')
-        print(f"Plugin folder: {self.plugin_dir}")
-        print(f"Plugin name:   {self.plugin_name}")
+        tools_log.log_info(f"Our plugin folder: {self.plugin_dir}")
+        tools_log.log_info(f"Our plugin name:   {self.plugin_name}")
         setting_file = os.path.join(self.plugin_dir, 'config', 'init.config')
         if not os.path.exists(setting_file):
             message = f"Config file not found at: {setting_file}"
@@ -89,7 +89,7 @@ class GWPluginExample(QObject):
             if type(list_toolbars) is str:
                 list_toolbars = [list_toolbars]
         else:
-            print(f"Parameter 'list_toolbars' not set in section 'toolbars' of config file")
+            tools_log.log_info(f"Parameter 'list_toolbars' not set in section 'toolbars' of config file")
             return
 
         for toolbar_id in list(list_toolbars):
@@ -110,7 +110,6 @@ class GWPluginExample(QObject):
                     if text is None:
                         text = f'{index_action}_text'
                     icon_path = self.icon_folder + plugin_toolbar.toolbar_id + os.sep + index_action + ".png"
-                    print(buttons, button_def, icon_path, button_def, text, plugin_toolbar.toolbar, ag)
                     button = getattr(buttons, button_def)(icon_path, button_def, text, plugin_toolbar.toolbar, ag)
                     self.buttons[index_action] = button
 
@@ -119,7 +118,7 @@ class GWPluginExample(QObject):
 
         list_actions = self.settings.value(f"toolbars/{toolbar_id}")
         if list_actions is None:
-            print(f"Toolbar '{toolbar_id}' has no action set in config file")
+            tools_log.log_info(f"Toolbar '{toolbar_id}' has no action set in config file")
             return
 
         if type(list_actions) != list:

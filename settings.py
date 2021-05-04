@@ -44,8 +44,6 @@ def init_plugin():
         print(f"Giswater plugin folder not found: {this.giswater_folder_path}")
         return False
 
-    print(f"Giswater plugin folder:\n{this.giswater_folder_path}")
-
     # Define imports from Giswater modules
     this.tools_config = importlib.import_module('.tools_config', package=f'{this.giswater_folder}.lib')
     this.tools_db = importlib.import_module('.tools_db', package=f'{this.giswater_folder}.lib')
@@ -57,6 +55,8 @@ def init_plugin():
     this.dialog = importlib.import_module('.dialog', package=f'{this.giswater_folder}.core.toolbars')
     this.mincut = importlib.import_module('.mincut', package=f'{this.giswater_folder}.core.shared')
     this.gw_global_vars = importlib.import_module('.global_vars', package=f'{this.giswater_folder}')
+
+    this.tools_log.log_info(f"Giswater plugin folder: {this.giswater_folder_path}")
 
     return True
 
@@ -73,7 +73,7 @@ def get_giswater_folder(filename_to_find='metadata.txt'):
             qgis_plugin_root_folder = os.environ['QGIS_PLUGINPATH']
         elif sys.platform == "darwin":
             qgis_plugin_root_folder = os.environ['QGIS_PLUGINPATH']
-    except KeyError as e:
+    except KeyError:
         pass
 
     list_folders = []
