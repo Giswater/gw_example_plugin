@@ -35,7 +35,6 @@ class GwDialog(QDialog):
         super().__init__()
         self.setupUi(self)
         self.subtag = subtag
-        # Enable event filter
         self.installEventFilter(self)
 
 
@@ -77,7 +76,6 @@ class GwMainWindowDialog(QMainWindow):
         super().__init__()
         self.setupUi(self)
         self.subtag = subtag
-        # Enable event filter
         self.installEventFilter(self)
 
 
@@ -86,8 +84,6 @@ class GwMainWindowDialog(QMainWindow):
             self.dlg_closed.emit()
             return super().closeEvent(event)
         except RuntimeError:
-            # This exception jumps, for example, when closing the mincut dialog when it is in docker
-            # RuntimeError: wrapped C/C++ object of type Mincut has been deleted
             pass
 
 
@@ -125,48 +121,38 @@ class GwMainWindowDialog(QMainWindow):
             return super().keyPressEvent(event)
 
 
-def get_ui_class(ui_file_name, subfolder='shared'):
+def get_ui_class(ui_file_name, subfolder=None):
     """ Get UI Python class from @ui_file_name """
 
-    # Folder that contains UI files
-    if subfolder in ('basic', 'edit', 'epa', 'om', 'plan', 'utilities', 'toc', 'custom'):
-        ui_folder_path = os.path.dirname(__file__) + os.sep + 'toolbars' + os.sep + subfolder
-    else:
-        ui_folder_path = os.path.dirname(__file__) + os.sep + subfolder
+    ui_folder_path = os.path.dirname(__file__)
+    if subfolder:
+        ui_folder_path = os.path.join(ui_folder_path, subfolder)
     ui_file_path = os.path.abspath(os.path.join(ui_folder_path, ui_file_name))
     #print(f"{ui_file_path}")
     return uic.loadUiType(ui_file_path)[0]
 
 
-# MY_PLUGIN
-FORM_CLASS = get_ui_class('dlg_boton1.ui', 'my_plugin')
+# Dialogs of toolbar: my_toolbar
+FORM_CLASS = get_ui_class('dlg_boton1.ui', 'my_toolbar')
 class DlgBoton1(GwDialog, FORM_CLASS):
     pass
 
-FORM_CLASS = get_ui_class('dlg_boton2.ui', 'my_plugin')
+FORM_CLASS = get_ui_class('dlg_boton2.ui', 'my_toolbar')
 class DlgBoton2(GwDialog, FORM_CLASS):
     pass
 
-FORM_CLASS = get_ui_class('dlg_boton3.ui', 'my_plugin')
+FORM_CLASS = get_ui_class('dlg_boton3.ui', 'my_toolbar')
 class DlgBoton3(GwDialog, FORM_CLASS):
     pass
 
-FORM_CLASS = get_ui_class('mincut_manager.ui', 'my_plugin')
+# Dialogs of toolbar: mincut
+FORM_CLASS = get_ui_class('mincut_manager.ui', 'mincut')
 class MincutManagerUi(GwDialog, FORM_CLASS):
     pass
 
-FORM_CLASS = get_ui_class('mincut.ui', 'my_plugin')
+FORM_CLASS = get_ui_class('mincut.ui', 'mincut')
 class MincutUi(GwMainWindowDialog, FORM_CLASS):
     def __init__(self):
         self.closeMainWin = False
         self.mincutCanceled = True
         super().__init__()
-
-FORM_CLASS = get_ui_class('config_vars.ui', 'my_plugin')
-class DlgConfigVars(GwDialog, FORM_CLASS):
-    pass
-
-FORM_CLASS = get_ui_class('doc_manager.ui', 'my_plugin')
-class DocManager(GwDialog, FORM_CLASS):
-    pass
-
