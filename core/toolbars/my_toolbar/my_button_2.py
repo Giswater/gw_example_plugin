@@ -30,7 +30,7 @@ class SelectionType(Enum):
 # TODO: limpiar, ordenar y comentar codigo
 # TODO: mirate como funcionan los radiobuttons, hay mas formas
 
-class MyBoton2(dialog.GwAction):
+class MyButton2(dialog.GwAction):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
 

@@ -16,7 +16,7 @@ maptool = importlib.import_module('.maptool', package=f'{giswater_folder}.core.t
 info_button = importlib.import_module('.info_button', package=f'{giswater_folder}.core.toolbars.basic')
 
 
-class MyBoton5(maptool.GwMaptool):
+class MyButton5(maptool.GwMaptool):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
 

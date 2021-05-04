@@ -23,7 +23,7 @@ importlib.reload(dialog)
 importlib.reload(tools_gw)
 
 
-class MyBoton7(dialog.GwAction):
+class MyButton7(dialog.GwAction):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)

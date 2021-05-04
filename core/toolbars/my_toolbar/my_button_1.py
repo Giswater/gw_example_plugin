@@ -18,7 +18,7 @@ from ....settings import giswater_folder, tools_qgis, tools_log, tools_qt, tools
 dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')
 
 
-class MyBoton1(dialog.GwAction):
+class MyButton1(dialog.GwAction):
 
     def __init__(self, icon_path, action_name, text, toolbar, action_group):
         super().__init__(icon_path, action_name, text, toolbar, action_group)
