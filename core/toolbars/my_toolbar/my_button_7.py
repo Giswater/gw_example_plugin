@@ -18,7 +18,7 @@ from qgis.gui import QgsDialog, QgsDateTimeEdit
 
 from ...ui.ui_manager import DlgButton7
 from .... import global_vars
-from ....settings import giswater_folder, tools_db, tools_log, tools_qgis, tools_qt, tools_gw
+from ....settings import giswater_folder, tools_db, tools_log, tools_qgis, tools_qt, tools_gw, gw_global_vars
 dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')
 importlib.reload(dialog)
 importlib.reload(tools_gw)
@@ -60,7 +60,7 @@ class MyButton7(dialog.GwAction):
 
     def execute_processing(self):
 
-        print("execute_processing")
+        tools_log.log_info("execute_processing")
 
         #processing.algorithmHelp("native:buffer")
         filename = 'geopackage.gpkg'
@@ -79,7 +79,11 @@ class MyButton7(dialog.GwAction):
 
     def execute_pg_function(self):
 
-        sql = "SELECT ws_dev35.test_function();"
+        if gw_global_vars.schema_name:
+            tools_qgis.show_warning("Database schema name not found!")
+            return
+
+        sql = f"SELECT {gw_global_vars.schema_name}.test_function();"
         row = tools_db.get_row(sql, log_sql=True)
         if row:
             tools_qgis.show_info(f"Function result: {row[0]}")
@@ -87,9 +91,14 @@ class MyButton7(dialog.GwAction):
 
     def execute_pg_json_function(self):
 
+        if gw_global_vars.schema_name is None:
+            tools_qgis.show_warning("Database schema name not found!")
+            return
+
         body = None
         # body = tools_gw.create_body()
-        result = tools_gw.execute_procedure('test_json_function', body, 'ws_dev35', log_sql=True, log_result=True)
+        result = tools_gw.execute_procedure('test_json_function', body, gw_global_vars.schema_name,
+            log_sql=True, log_result=True)
         if result is not None and result['status'] == 'Accepted' and result['message']:
             level = int(result['message']['level']) if 'level' in result['message'] else 1
             tools_qgis.show_message(result['message']['text'], level)
