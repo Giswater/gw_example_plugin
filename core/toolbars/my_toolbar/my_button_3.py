@@ -9,7 +9,7 @@ import importlib
 import os
 import sys
 
-from ...ui.ui_manager import DlgBoton3
+from ...ui.ui_manager import DlgButton3
 from ....settings import giswater_folder, tools_qt
 dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')
 
@@ -21,6 +21,6 @@ class MyButton3(dialog.GwAction):
 
 
     def clicked_event(self):
-        self.dlg_btn3 = DlgBoton3()
+        self.dlg_btn3 = DlgButton3()
         tools_qt.fill_table(self.dlg_btn3.tbl_layer_info, "arc")
         self.dlg_btn3.open()

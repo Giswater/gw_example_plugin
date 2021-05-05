@@ -13,7 +13,7 @@ from functools import partial
 from qgis.core import QgsVectorLayer
 from qgis.utils import iface
 
-from ...ui.ui_manager import DlgBoton1
+from ...ui.ui_manager import DlgButton1
 from ....settings import giswater_folder, tools_qgis, tools_log, tools_qt, tools_gw
 dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')
 
@@ -26,7 +26,7 @@ class MyButton1(dialog.GwAction):
 
     def clicked_event(self):
 
-        self.dlg_btn1 = DlgBoton1()
+        self.dlg_btn1 = DlgButton1()
         tools_gw.load_settings(self.dlg_btn1)
         self.dlg_btn1.rejected.connect(partial(tools_gw.save_settings, self.dlg_btn1))
         self.dlg_btn1.btn_close.clicked.connect(self.dlg_btn1.close)

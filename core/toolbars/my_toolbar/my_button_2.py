@@ -15,7 +15,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
 from qgis.gui import QgsMapToolEmitPoint, QgsVertexMarker
 
-from ...ui.ui_manager import DlgBoton2
+from ...ui.ui_manager import DlgButton2
 from ....settings import giswater_folder, tools_log, tools_qgis, tools_qt, tools_gw
 dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')
 snap_manager = importlib.import_module('.snap_manager', package=f'{giswater_folder}.core.utils')
@@ -42,7 +42,7 @@ class MyButton2(dialog.GwAction):
     def clicked_event(self):
 
         self.selection_type = SelectionType.ACTIVE
-        self.dlg_btn2 = DlgBoton2()
+        self.dlg_btn2 = DlgButton2()
         tools_gw.load_settings(self.dlg_btn2)
 
         # Secció: selecció de capes

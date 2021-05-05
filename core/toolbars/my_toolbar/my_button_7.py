@@ -16,6 +16,7 @@ from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QPushButton
 from qgis.core import QgsApplication
 from qgis.gui import QgsDialog, QgsDateTimeEdit
 
+from ...ui.ui_manager import DlgButton7
 from .... import global_vars
 from ....settings import giswater_folder, tools_db, tools_log, tools_qgis, tools_qt, tools_gw
 dialog = importlib.import_module('.dialog', package=f'{giswater_folder}.core.toolbars')

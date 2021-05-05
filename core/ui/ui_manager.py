@@ -133,16 +133,20 @@ def get_ui_class(ui_file_name, subfolder=None):
 
 
 # Dialogs of toolbar: my_toolbar
-FORM_CLASS = get_ui_class('dlg_boton1.ui', 'my_toolbar')
-class DlgBoton1(GwDialog, FORM_CLASS):
+FORM_CLASS = get_ui_class('dlg_button_1.ui', 'my_toolbar')
+class DlgButton1(GwDialog, FORM_CLASS):
     pass
 
-FORM_CLASS = get_ui_class('dlg_boton2.ui', 'my_toolbar')
-class DlgBoton2(GwDialog, FORM_CLASS):
+FORM_CLASS = get_ui_class('dlg_button_2.ui', 'my_toolbar')
+class DlgButton2(GwDialog, FORM_CLASS):
     pass
 
-FORM_CLASS = get_ui_class('dlg_boton3.ui', 'my_toolbar')
-class DlgBoton3(GwDialog, FORM_CLASS):
+FORM_CLASS = get_ui_class('dlg_button_3.ui', 'my_toolbar')
+class DlgButton3(GwDialog, FORM_CLASS):
+    pass
+
+FORM_CLASS = get_ui_class('dlg_button_7.ui', 'my_toolbar')
+class DlgButton7(GwDialog, FORM_CLASS):
     pass
 
 # Dialogs of toolbar: mincut
