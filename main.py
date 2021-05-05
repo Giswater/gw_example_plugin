@@ -5,23 +5,17 @@ General Public License as published by the Free Software Foundation, either vers
 or (at your option) any later version.
 """
 # -*- coding: utf-8 -*-
-import importlib
 import configparser
-import console
-
-import os.path
+import os
 import sys
-from collections import OrderedDict, Counter
 
 from qgis.PyQt.QtCore import QObject, QSettings
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QActionGroup, QDockWidget, QToolBar, QToolButton
+from qgis.PyQt.QtWidgets import QActionGroup, QDockWidget, QToolBar
 
-from .plugin_toolbar import PluginToolbar
-from .core.toolbars import buttons
 from . import global_vars
-
-from .settings import tools_qgis, tools_os, gw_global_vars, giswater_folder_path
+from .core.plugin_toolbar import PluginToolbar
+from .core.toolbars import buttons
+from .settings import gw_global_vars, giswater_folder_path, tools_log
 
 
 class GWPluginExample(QObject):
@@ -33,22 +27,12 @@ class GWPluginExample(QObject):
             application at run time.
         :type iface: QgsInterface
         """
-        # Initialize instance attributes
+
         super(GWPluginExample, self).__init__()
         self.iface = iface
         self.plugin_toolbars = {}
         self.buttons = {}
-        self.srid = None
-        self.load_project = None
-        self.dict_toolbars = {}
-        self.dict_actions = {}
-        self.actions_not_checkable = None
-        self.available_layers = []
-        self.btn_add_layers = None
-        self.update_sql = None
         self.action = None
-        self.action_info = None
-        self.toolButton = None
 
 
     def unload(self, remove_modules=True):
@@ -72,6 +56,8 @@ class GWPluginExample(QObject):
         self.plugin_dir = os.path.dirname(__file__)
         self.icon_folder = self.plugin_dir + os.sep + 'icons' + os.sep + 'toolbars' + os.sep
         self.plugin_name = self.get_plugin_metadata('name', 'giswater_plugin_example')
+        tools_log.log_info(f"Our plugin folder: {self.plugin_dir}")
+        tools_log.log_info(f"Our plugin name:   {self.plugin_name}")
         setting_file = os.path.join(self.plugin_dir, 'config', 'init.config')
         if not os.path.exists(setting_file):
             message = f"Config file not found at: {setting_file}"
@@ -81,32 +67,37 @@ class GWPluginExample(QObject):
         # Need init giswater global_vars if we can inherit from GwMaptool becouse example is loaded before giswater
         gw_global_vars.init_global(self.iface, self.iface.mapCanvas(), giswater_folder_path, self.plugin_name, None)
 
-        global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name, None)
-        major_version = tools_qgis.get_major_version('1.1', self.plugin_dir)
-        global_vars.roaming_user_dir = f'{tools_os.get_datadir()}{os.sep}{self.plugin_name.capitalize()}{os.sep}{major_version}'
+        global_vars.init_global(self.iface, self.iface.mapCanvas(), self.plugin_dir, self.plugin_name)
 
         self.settings = QSettings(setting_file, QSettings.IniFormat)
         self.settings.setIniCodec(sys.getfilesystemencoding())
-
         self.qgis_settings = QSettings()
         self.qgis_settings.setIniCodec(sys.getfilesystemencoding())
 
-        # Manage section 'actions_list' of config file
-        self.manage_section_actions_list()
+        self.create_toolbars()
 
-        # Manage section 'toolbars' of config file
-        self.manage_section_toolbars()
-
-        # PROJECT_READ
         self.manage_toolbars()
 
 
-    def manage_toolbars(self):
-        """ Manage actions of the custom plugin toolbars.
-        project_type in ('ws', 'ud')
-        """
+    def create_toolbars(self):
+        """ Create custom plugin toolbars """
 
-        self.create_toolbar('my_toolbar')
+        # Get list of available toolbars
+        list_toolbars = self.settings.value(f"toolbars/list_toolbars")
+        if list_toolbars:
+            # Check if list_values has only one value
+            if type(list_toolbars) is str:
+                list_toolbars = [list_toolbars]
+        else:
+            tools_log.log_info(f"Parameter 'list_toolbars' not set in section 'toolbars' of config file")
+            return
+
+        for toolbar_id in list(list_toolbars):
+            self.create_toolbar(toolbar_id)
+
+
+    def manage_toolbars(self):
+        """ Manage actions of the custom plugin toolbars """
 
         # Manage action group of every toolbar
         parent = self.iface.mainWindow()
@@ -115,9 +106,10 @@ class GWPluginExample(QObject):
             for index_action in plugin_toolbar.list_actions:
                 button_def = self.settings.value(f"buttons_def/{index_action}")
                 if button_def:
-                    text = f'{index_action}_text'
+                    text = self.settings.value(f"buttons_text/{index_action}")
+                    if text is None:
+                        text = f'{index_action}_text'
                     icon_path = self.icon_folder + plugin_toolbar.toolbar_id + os.sep + index_action + ".png"
-                    print(buttons, button_def, icon_path, button_def, text, plugin_toolbar.toolbar, ag)
                     button = getattr(buttons, button_def)(icon_path, button_def, text, plugin_toolbar.toolbar, ag)
                     self.buttons[index_action] = button
 
@@ -126,6 +118,7 @@ class GWPluginExample(QObject):
 
         list_actions = self.settings.value(f"toolbars/{toolbar_id}")
         if list_actions is None:
+            tools_log.log_info(f"Toolbar '{toolbar_id}' has no action set in config file")
             return
 
         if type(list_actions) != list:
@@ -143,50 +136,6 @@ class GWPluginExample(QObject):
         plugin_toolbar.toolbar.setObjectName(toolbar_name)
         plugin_toolbar.list_actions = list_actions
         self.plugin_toolbars[toolbar_id] = plugin_toolbar
-
-
-    def manage_section_actions_list(self):
-        """ Manage section 'actions_list' of config file """
-
-        # Dynamically get parameters defined in section 'actions_list'
-        section = 'actions_not_checkable'
-        self.settings.beginGroup(section)
-        list_keys = self.settings.allKeys()
-        self.settings.endGroup()
-
-        for key in list_keys:
-            list_values = self.settings.value(f"{section}/{key}")
-            if list_values:
-                self.dict_actions[key] = list_values
-            else:
-                print(f"Parameter not set in section '{section}' of config file: '{key}'")
-
-        # Get list of actions not checkable (normally because they open a form)
-        aux = []
-        for list_actions in self.dict_actions.values():
-            for elem in list_actions:
-                aux.append(elem)
-
-        self.actions_not_checkable = sorted(aux)
-
-
-    def manage_section_toolbars(self):
-        """ Manage section 'toolbars' of config file """
-
-        # Dynamically get parameters defined in section 'toolbars'
-        section = 'toolbars'
-        self.settings.beginGroup(section)
-        list_keys = self.settings.allKeys()
-        self.settings.endGroup()
-        for key in list_keys:
-            list_values = self.settings.value(f"{section}/{key}")
-            if list_values:
-                # Check if list_values has only one value
-                if type(list_values) is str:
-                    list_values = [list_values]
-                self.dict_toolbars[key] = list_values
-            else:
-                print(f"Parameter not set in section '{section}' of config file: '{key}'")
 
 
     def get_plugin_metadata(self, parameter, default_value):

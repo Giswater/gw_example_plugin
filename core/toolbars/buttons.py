@@ -7,10 +7,12 @@ or (at your option) any later version.
 # -*- coding: utf-8 -*-
 
 # my_toolbar
-from .my_toolbar.boton_1 import MyBoton1
-from .my_toolbar.boton_2 import MyBoton2
-from .my_toolbar.boton_3 import MyBoton3
-from .my_toolbar.boton_5 import MyBoton5
-from .my_toolbar.boton_6 import MyBoton6
-from .my_toolbar.mincut_manager_sms import MincutManagerSms
-from .my_toolbar.mincut_sms import MincutSms
+from .my_toolbar.my_button_1 import MyButton1
+from .my_toolbar.my_button_2 import MyButton2
+from .my_toolbar.my_button_3 import MyButton3
+from .my_toolbar.my_button_5 import MyButton5
+from .my_toolbar.my_button_7 import MyButton7
+
+# mincut
+#from .mincut.mincut_manager_sms import MincutManagerSms
+#from .mincut.mincut_sms import MincutSms
