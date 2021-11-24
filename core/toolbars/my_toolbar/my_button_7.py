@@ -31,10 +31,46 @@ class MyButton7(dialog.GwAction):
 
 
     def clicked_event(self):
-        self.show_test_dialog()
-        self.execute_processing()
-        self.execute_pg_function()
-        self.execute_pg_json_function()
+
+        self.show_main_dialog()
+
+
+    def show_main_dialog(self):
+
+        # Create form
+        self.dlg_btn7 = DlgButton7()
+        self.dlg_btn7.setWindowTitle("New title")
+
+        # Manage widgets dynamically
+        widget_name = "cbo_function"
+        widget = tools_qt.get_widget(self.dlg_btn7, widget_name)
+        if widget:
+            widget.addItem("test_function")
+        else:
+            print(f"Widget not found: '{widget_name}'")
+
+        # Set signals
+        self.dlg_btn7.btn_accept.clicked.connect(self.accept_clicked)
+        self.dlg_btn7.btn_open_dialog.clicked.connect(self.show_test_dialog)
+        self.dlg_btn7.btn_close.clicked.connect(self.dlg_btn7.close)
+
+        # Open form
+        self.dlg_btn7.show()
+
+
+    def accept_clicked(self):
+
+        # Get selected item from QComboBox
+        method_name = tools_qt.get_selected_item(self.dlg_btn7, "cbo_function")
+
+        # Check if selected method exists in our class
+        if not hasattr(self, method_name):
+            print(f"Method not found: {method_name}")
+            return
+
+        # Dynamically get method object. Execute it
+        method_object = getattr(self, method_name)
+        method_object()
 
 
     def test_dialog_signal(self):
@@ -43,15 +79,16 @@ class MyButton7(dialog.GwAction):
 
     def show_test_dialog(self):
 
-        test_dialog = QgsDialog(parent=self.iface.mainWindow(), fl=Qt.WindowFlags(),
-            buttons=QDialogButtonBox.Close, orientation=Qt.Horizontal)
+        parent_window = self.iface.mainWindow()
+        test_dialog = QgsDialog(parent=parent_window, fl=Qt.WindowFlags(), buttons=QDialogButtonBox.Close)
         test_dialog.setWindowTitle("TEST DIALOG")
-        test_dialog.resize(400, 200)
+        test_dialog.resize(300, 150)
+        test_dialog.move(500, 300)
         date_time_edit = QgsDateTimeEdit(test_dialog)
-        date_time_edit.setMinimumSize(100, 30)
-        date_time_edit.move(50, 30)
+        date_time_edit.setMinimumSize(150, 30)
+        date_time_edit.move(20, 30)
         btn_accept = QPushButton(test_dialog)
-        btn_accept.move(200, 30)
+        btn_accept.move(20, 80)
         btn_accept.setText("Accept")
         btn_accept.clicked.connect(self.test_dialog_signal)
 
