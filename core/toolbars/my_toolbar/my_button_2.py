@@ -42,26 +42,26 @@ class MyButton2(dialog.GwAction):
     def clicked_event(self):
 
         self.selection_type = SelectionType.ACTIVE
-        self.dlg_btn2 = DlgButton2()
-        tools_gw.load_settings(self.dlg_btn2)
+        self.dlg = DlgButton2()
+        tools_gw.load_settings(self.dlg)
 
         # Secció: selecció de capes
-        self.dlg_btn2.rdb_layers_active.clicked.connect(partial(self.selection_type_changed, SelectionType.ACTIVE))
-        self.dlg_btn2.rdb_layers_all.clicked.connect(partial(self.selection_type_changed, SelectionType.ALL))
+        self.dlg.rdb_layers_active.clicked.connect(partial(self.selection_type_changed, SelectionType.ACTIVE))
+        self.dlg.rdb_layers_all.clicked.connect(partial(self.selection_type_changed, SelectionType.ALL))
 
         # Secció: activar l'estat de "seleccionant al mapa"
-        self.dlg_btn2.btn_select.clicked.connect(self.selection_start)
-        self.dlg_btn2.btn_cancel.clicked.connect(self.deactivate_signals)
-        self.dlg_btn2.btn_cancel.clicked.connect(lambda: self.dlg_btn2.rdb_layers_active.setEnabled(True))
-        self.dlg_btn2.btn_cancel.clicked.connect(lambda: self.dlg_btn2.rdb_layers_all.setEnabled(True))
+        self.dlg.btn_select.clicked.connect(self.selection_start)
+        self.dlg.btn_cancel.clicked.connect(self.deactivate_signals)
+        self.dlg.btn_cancel.clicked.connect(lambda: self.dlg.rdb_layers_active.setEnabled(True))
+        self.dlg.btn_cancel.clicked.connect(lambda: self.dlg.rdb_layers_all.setEnabled(True))
         # Secció: sortida
-        self.dlg_btn2.btn_close.clicked.connect(self.dlg_btn2.close)
-        self.dlg_btn2.rejected.connect(partial(tools_gw.save_settings, self.dlg_btn2))
-        self.dlg_btn2.rejected.connect(partial(self.deactivate_signals))
+        self.dlg.btn_close.clicked.connect(self.dlg.close)
+        self.dlg.rejected.connect(partial(tools_gw.save_settings, self.dlg))
+        self.dlg.rejected.connect(partial(self.deactivate_signals))
 
         self.refresh_selection_type()
 
-        tools_gw.open_dialog(self.dlg_btn2)
+        tools_gw.open_dialog(self.dlg)
 
 
     def selection_type_changed(self, new_type):
@@ -73,20 +73,20 @@ class MyButton2(dialog.GwAction):
     def refresh_selection_type(self):
 
         if self.selection_type == SelectionType.ACTIVE:
-            self.dlg_btn2.chk_layer_arc.setEnabled(False)
-            self.dlg_btn2.chk_layer_connec.setEnabled(False)
-            self.dlg_btn2.chk_layer_node.setEnabled(False)
+            self.dlg.chk_layer_arc.setEnabled(False)
+            self.dlg.chk_layer_connec.setEnabled(False)
+            self.dlg.chk_layer_node.setEnabled(False)
         else:
-            self.dlg_btn2.chk_layer_arc.setEnabled(True)
-            self.dlg_btn2.chk_layer_connec.setEnabled(True)
-            self.dlg_btn2.chk_layer_node.setEnabled(True)
+            self.dlg.chk_layer_arc.setEnabled(True)
+            self.dlg.chk_layer_connec.setEnabled(True)
+            self.dlg.chk_layer_node.setEnabled(True)
 
 
     def selection_start(self):
 
         self.is_selecting = True
-        self.dlg_btn2.rdb_layers_active.setEnabled(False)
-        self.dlg_btn2.rdb_layers_all.setEnabled(False)
+        self.dlg.rdb_layers_active.setEnabled(False)
+        self.dlg.rdb_layers_all.setEnabled(False)
         self.emit_point = QgsMapToolEmitPoint(self.canvas)
         self.canvas.setMapTool(self.emit_point)
 
@@ -110,9 +110,9 @@ class MyButton2(dialog.GwAction):
         elif self.selection_type == SelectionType.ALL:
             tools_log.log_info("all selector")
             # Store user snapping configuration
-            if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_arc) or \
-                    tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_connec) or \
-                    tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_node):
+            if tools_qt.is_checked(self.dlg, self.dlg.chk_layer_arc) or \
+                    tools_qt.is_checked(self.dlg, self.dlg.chk_layer_connec) or \
+                    tools_qt.is_checked(self.dlg, self.dlg.chk_layer_node):
                 self.set_user_config()
             self.activate_snapping(self.emit_point)
 
@@ -125,13 +125,13 @@ class MyButton2(dialog.GwAction):
         # Set snapping to 'arc', 'node', 'connec' and 'gully'
         self.snapper_manager.set_snapping_layers()
 
-        if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_arc):
+        if tools_qt.is_checked(self.dlg, self.dlg.chk_layer_arc):
             self.snapper_manager.config_snap_to_arc()
 
-        if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_connec):
+        if tools_qt.is_checked(self.dlg, self.dlg.chk_layer_connec):
             self.snapper_manager.config_snap_to_connec()
 
-        if tools_qt.is_checked(self.dlg_btn2, self.dlg_btn2.chk_layer_node):
+        if tools_qt.is_checked(self.dlg, self.dlg.chk_layer_node):
             self.snapper_manager.config_snap_to_node()
 
         self.snapper_manager.set_snap_mode()

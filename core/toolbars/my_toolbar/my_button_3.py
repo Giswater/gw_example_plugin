@@ -21,6 +21,6 @@ class MyButton3(dialog.GwAction):
 
 
     def clicked_event(self):
-        self.dlg_btn3 = DlgButton3()
-        tools_qt.fill_table(self.dlg_btn3.tbl_layer_info, "arc")
-        self.dlg_btn3.open()
+        self.dlg = DlgButton3()
+        tools_qt.fill_table(self.dlg.tbl_layer_info, "arc")
+        self.dlg.open()

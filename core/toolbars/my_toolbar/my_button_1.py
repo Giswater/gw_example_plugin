@@ -26,16 +26,16 @@ class MyButton1(dialog.GwAction):
 
     def clicked_event(self):
 
-        self.dlg_btn1 = DlgButton1()
-        tools_gw.load_settings(self.dlg_btn1)
-        self.dlg_btn1.rejected.connect(partial(tools_gw.save_settings, self.dlg_btn1))
-        self.dlg_btn1.btn_close.clicked.connect(self.dlg_btn1.close)
-        self.dlg_btn1.cmb_layers.currentIndexChanged.connect(self.set_active_layer)
-        self.dlg_btn1.btn_selection.clicked.connect(self.selection_init)
+        self.dlg = DlgButton1()
+        tools_gw.load_settings(self.dlg)
+        self.dlg.rejected.connect(partial(tools_gw.save_settings, self.dlg))
+        self.dlg.btn_close.clicked.connect(self.dlg.close)
+        self.dlg.cmb_layers.currentIndexChanged.connect(self.set_active_layer)
+        self.dlg.btn_selection.clicked.connect(self.selection_init)
 
         self.fill_combo_layers()
 
-        tools_gw.open_dialog(self.dlg_btn1)
+        tools_gw.open_dialog(self.dlg)
 
 
     def selection_init(self):
@@ -68,7 +68,7 @@ class MyButton1(dialog.GwAction):
                 attr_id = i.attribute(field_id)
                 list_ids.append(attr_id)
 
-            tools_qt.set_widget_text(self.dlg_btn1, self.dlg_btn1.lbl_selected_items, ','.join(list_ids))
+            tools_qt.set_widget_text(self.dlg, self.dlg.lbl_selected_items, ','.join(list_ids))
 
         except Exception as e:
             tools_log.log_warning(f"Exception: {type(e).__name__}, {e}")
@@ -81,7 +81,7 @@ class MyButton1(dialog.GwAction):
 
     def set_active_layer(self):
 
-        layer = tools_qt.get_combo_value(self.dlg_btn1, self.dlg_btn1.cmb_layers, 0)
+        layer = tools_qt.get_combo_value(self.dlg, self.dlg.cmb_layers, 0)
         if type(layer) != QgsVectorLayer:
             msg = "Invalid layer"
             tools_gw.show_warning(msg)
@@ -98,5 +98,5 @@ class MyButton1(dialog.GwAction):
             elem = [layer, layer.name()]
             layers.append(elem)
 
-        tools_qt.fill_combo_values(self.dlg_btn1.cmb_layers, layers, 1)
+        tools_qt.fill_combo_values(self.dlg.cmb_layers, layers, 1)
 

@@ -38,30 +38,30 @@ class MyButton7(dialog.GwAction):
     def show_main_dialog(self):
 
         # Create form
-        self.dlg_btn7 = DlgButton7()
-        self.dlg_btn7.setWindowTitle("New title")
+        self.dlg = DlgButton7()
+        self.dlg.setWindowTitle("New title")
 
         # Manage widgets dynamically
         widget_name = "cbo_function"
-        widget = tools_qt.get_widget(self.dlg_btn7, widget_name)
+        widget = tools_qt.get_widget(self.dlg, widget_name)
         if widget:
             widget.addItem("test_function")
         else:
             print(f"Widget not found: '{widget_name}'")
 
         # Set signals
-        self.dlg_btn7.btn_accept.clicked.connect(self.accept_clicked)
-        self.dlg_btn7.btn_open_dialog.clicked.connect(self.show_test_dialog)
-        self.dlg_btn7.btn_close.clicked.connect(self.dlg_btn7.close)
+        self.dlg.btn_accept.clicked.connect(self.accept_clicked)
+        self.dlg.btn_open_dialog.clicked.connect(self.show_test_dialog)
+        self.dlg.btn_close.clicked.connect(self.dlg.close)
 
         # Open form
-        self.dlg_btn7.show()
+        self.dlg.show()
 
 
     def accept_clicked(self):
 
         # Get selected item from QComboBox
-        method_name = tools_qt.get_selected_item(self.dlg_btn7, "cbo_function")
+        method_name = tools_qt.get_selected_item(self.dlg, "cbo_function")
 
         # Check if selected method exists in our class
         if not hasattr(self, method_name):
