@@ -1,16 +1,11 @@
-CREATE OR REPLACE FUNCTION ws_dev35.test_json_function() RETURNS integer LANGUAGE plpgsql AS $function$
+CREATE OR REPLACE FUNCTION test_json_function() RETURNS json LANGUAGE plpgsql AS $function$
 DECLARE
     v_project_type text;
     v_version text;
 
 BEGIN
 
-    SET search_path = "ws_dev35", public;
-
-    SELECT project_type, giswater
-    INTO v_project_type, v_version
-    FROM sys_version
-    ORDER BY id DESC LIMIT 1;
+    SELECT project_type, giswater INTO v_project_type, v_version FROM sys_version ORDER BY id DESC LIMIT 1;
 
     --RAISE EXCEPTION 'Exception raised!!!';
 
