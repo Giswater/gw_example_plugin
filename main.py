@@ -74,9 +74,14 @@ class GWPluginExample(QObject):
         self.qgis_settings = QSettings()
         self.qgis_settings.setIniCodec(sys.getfilesystemencoding())
 
+        # Create custom plugin toolbars
         self.create_toolbars()
 
+        # Manage actions of the custom plugin toolbars
         self.manage_toolbars()
+
+        # Manage global_vars
+        self.manage_global_vars()
 
 
     def create_toolbars(self):
@@ -159,3 +164,10 @@ class GWPluginExample(QObject):
             value = default_value
         finally:
             return value
+
+
+    def manage_global_vars(self):
+
+        schema_name = self.settings.value(f"database/schema_name")
+        global_vars.schema_name = schema_name
+
