@@ -13,6 +13,3 @@ from .my_toolbar.my_button_3 import MyButton3
 from .my_toolbar.my_button_5 import MyButton5
 from .my_toolbar.my_button_7 import MyButton7
 
-# mincut
-#from .mincut.mincut_manager_sms import MincutManagerSms
-#from .mincut.mincut_sms import MincutSms

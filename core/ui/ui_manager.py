@@ -149,14 +149,3 @@ FORM_CLASS = get_ui_class('dlg_button_7.ui', 'my_toolbar')
 class DlgButton7(GwDialog, FORM_CLASS):
     pass
 
-# Dialogs of toolbar: mincut
-FORM_CLASS = get_ui_class('mincut_manager.ui', 'mincut')
-class MincutManagerUi(GwDialog, FORM_CLASS):
-    pass
-
-FORM_CLASS = get_ui_class('mincut.ui', 'mincut')
-class MincutUi(GwMainWindowDialog, FORM_CLASS):
-    def __init__(self):
-        self.closeMainWin = False
-        self.mincutCanceled = True
-        super().__init__()
