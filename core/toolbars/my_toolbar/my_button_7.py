@@ -46,8 +46,12 @@ class MyButton7(dialog.GwAction):
         widget = tools_qt.get_widget(self.dlg, widget_name)
         if widget:
             widget.addItem("test_function")
+            widget.addItem("execute_processing")
         else:
             print(f"Widget not found: '{widget_name}'")
+
+        # Select specific option
+        tools_qt.set_widget_text(self.dlg, widget_name, "test_function")
 
         # Set signals
         self.dlg.btn_accept.clicked.connect(self.accept_clicked)
@@ -55,7 +59,7 @@ class MyButton7(dialog.GwAction):
         self.dlg.btn_close.clicked.connect(self.dlg.close)
 
         # Open form
-        self.dlg.show()
+        self.dlg.open()
 
 
     def accept_clicked(self):
@@ -79,8 +83,7 @@ class MyButton7(dialog.GwAction):
 
     def show_test_dialog(self):
 
-        parent_window = self.iface.mainWindow()
-        test_dialog = QgsDialog(parent=parent_window, fl=Qt.WindowFlags(), buttons=QDialogButtonBox.Close)
+        test_dialog = QgsDialog(parent=self.iface.mainWindow(), fl=Qt.WindowFlags(), buttons=QDialogButtonBox.Close)
         test_dialog.setWindowTitle("TEST DIALOG")
         test_dialog.resize(300, 150)
         test_dialog.move(500, 300)
@@ -91,8 +94,7 @@ class MyButton7(dialog.GwAction):
         btn_accept.move(20, 80)
         btn_accept.setText("Accept")
         btn_accept.clicked.connect(self.test_dialog_signal)
-
-        test_dialog.show()
+        test_dialog.open()
 
 
     def execute_processing(self):
@@ -116,7 +118,7 @@ class MyButton7(dialog.GwAction):
 
     def execute_pg_function(self):
 
-        if gw_global_vars.schema_name:
+        if gw_global_vars.schema_name is None:
             tools_qgis.show_warning("Database schema name not found!")
             return
 
