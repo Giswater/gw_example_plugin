@@ -45,13 +45,14 @@ class MyButton7(dialog.GwAction):
         widget_name = "cbo_function"
         widget = tools_qt.get_widget(self.dlg, widget_name)
         if widget:
-            widget.addItem("test_function")
             widget.addItem("execute_processing")
+            widget.addItem("execute_pg_function")
+            widget.addItem("execute_pg_json_function")
         else:
-            print(f"Widget not found: '{widget_name}'")
+            tools_qgis.show_warning(f"Widget not found: '{widget_name}'")
 
-        # Select specific option
-        tools_qt.set_widget_text(self.dlg, widget_name, "test_function")
+        # Select a default option
+        tools_qt.set_widget_text(self.dlg, widget_name, "execute_pg_function")
 
         # Set signals
         self.dlg.btn_accept.clicked.connect(self.accept_clicked)
@@ -69,7 +70,7 @@ class MyButton7(dialog.GwAction):
 
         # Check if selected method exists in our class
         if not hasattr(self, method_name):
-            print(f"Method not found: {method_name}")
+            tools_qgis.show_warning(f"Method not found: {method_name}")
             return
 
         # Dynamically get method object. Execute it
@@ -86,7 +87,6 @@ class MyButton7(dialog.GwAction):
         test_dialog = QgsDialog(parent=self.iface.mainWindow(), fl=Qt.WindowFlags(), buttons=QDialogButtonBox.Close)
         test_dialog.setWindowTitle("TEST DIALOG")
         test_dialog.resize(300, 150)
-        test_dialog.move(500, 300)
         date_time_edit = QgsDateTimeEdit(test_dialog)
         date_time_edit.setMinimumSize(150, 30)
         date_time_edit.move(20, 30)
@@ -97,32 +97,68 @@ class MyButton7(dialog.GwAction):
         test_dialog.open()
 
 
-    def execute_processing(self):
+    def execute_processing(self, get_active_layer=True):
 
         tools_log.log_info("execute_processing")
 
-        #processing.algorithmHelp("native:buffer")
-        filename = 'geopackage.gpkg'
-        filepath = os.path.join(global_vars.plugin_dir, 'data', filename)
-        if not os.path.exists(filepath):
-            tools_qgis.show_warning(f"File not found: {filepath}")
+        if get_active_layer:
+            layer = global_vars.iface.activeLayer()
+        else:
+            filename = 'geopackage.gpkg'
+            filepath = os.path.join(global_vars.plugin_dir, 'data', filename)
+            if not os.path.exists(filepath):
+                tools_qgis.show_warning(f"File not found: {filepath}")
+                return
+            layer = f"{filepath}|layername=cities"
+
+        if layer is None:
+            tools_qgis.show_warning("Any layer selected")
             return
 
-        uri_places = f"{filepath}|layername=cities"
-        params = {'INPUT': uri_places, 'DISTANCE': 0.5, 'SEGMENTS': 5, 'END_CAP_STYLE': 0, 'JOIN_STYLE': 0,
-                  'MITER_LIMIT': 2, 'DISSOLVE': False, 'OUTPUT': 'memory:'}
-
         # Execute 'buffer' from processing toolbox
+        params = {'INPUT': layer, 'DISTANCE': 10, 'SEGMENTS': 5, 'END_CAP_STYLE': 0, 'JOIN_STYLE': 0,
+                  'MITER_LIMIT': 2, 'DISSOLVE': False, 'OUTPUT': 'memory:'}
         processing.runAndLoadResults("native:buffer", params)
+
+
+    def check_db_connection(self):
+        """ Check database connection """
+
+        tools_log.log_info("check_db_connection")
+
+        connection_status, not_version, layer_source = tools_db.set_database_connection()
+        if not connection_status:
+            tools_log.log_warning(f"Error connecting to database:\n {layer_source}")
+            return False
+
+        tools_log.log_info("Connection to database successful")
+        tools_log.log_info(f"Credentials: {gw_global_vars.dao_db_credentials}")
+
+        if gw_global_vars.schema_name is None:
+            tools_log.log_warning("Global var 'schema_name' not set")
+            gw_global_vars.schema_name = global_vars.schema_name
+
+        return True
 
 
     def execute_pg_function(self):
 
-        if gw_global_vars.schema_name is None:
-            tools_qgis.show_warning("Database schema name not found!")
+        tools_log.log_info("execute_pg_function")
+
+        if not self.check_db_connection():
             return
 
-        sql = f"SELECT {gw_global_vars.schema_name}.test_function();"
+        function_name = "test_function"
+        row = tools_db.check_function(function_name)
+        if not row:
+            tools_qgis.show_warning("Function not found in database", parameter=function_name)
+            return
+
+        # Set PostgreSQL parameter 'search_path'
+        tools_db.set_search_path(gw_global_vars.schema_name)
+
+        # Execute PostgreSQL function
+        sql = f"SELECT {gw_global_vars.schema_name}.{function_name}();"
         row = tools_db.get_row(sql, log_sql=True)
         if row:
             tools_qgis.show_info(f"Function result: {row[0]}")
@@ -130,14 +166,18 @@ class MyButton7(dialog.GwAction):
 
     def execute_pg_json_function(self):
 
-        if gw_global_vars.schema_name is None:
-            tools_qgis.show_warning("Database schema name not found!")
+        function_name = "test_json_function"
+        row = tools_db.check_function(function_name)
+        if not row:
+            tools_qgis.show_warning("Function not found in database", parameter=function_name)
             return
+
+        # Set PostgreSQL parameter 'search_path'
+        tools_db.set_search_path(gw_global_vars.schema_name)
 
         body = None
         # body = tools_gw.create_body()
-        result = tools_gw.execute_procedure('test_json_function', body, gw_global_vars.schema_name,
-            log_sql=True, log_result=True)
+        result = tools_gw.execute_procedure(function_name, body, gw_global_vars.schema_name, log_sql=True)
         if result is not None and result['status'] == 'Accepted' and result['message']:
             level = int(result['message']['level']) if 'level' in result['message'] else 1
             tools_qgis.show_message(result['message']['text'], level)
