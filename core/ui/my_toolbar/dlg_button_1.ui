@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1093</width>
+    <width>445</width>
     <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Select features</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="4" column="1">
@@ -54,9 +54,9 @@
    <item row="2" column="1">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="lbl_info">
        <property name="text">
-        <string>Selecciona elements de la capa:</string>
+        <string>Select features from layer</string>
        </property>
       </widget>
      </item>
@@ -66,7 +66,7 @@
      <item>
       <widget class="QPushButton" name="btn_selection">
        <property name="text">
-        <string>Iniciar selección</string>
+        <string>Select</string>
        </property>
       </widget>
      </item>

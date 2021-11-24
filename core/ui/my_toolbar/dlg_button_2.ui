@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Botó 2</string>
+   <string>Snap features</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" colspan="2">
@@ -19,9 +19,9 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_layer_groups">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="lbl_info">
          <property name="text">
-          <string>Seleccionar en:</string>
+          <string>Snapping configuration:</string>
          </property>
         </widget>
        </item>
@@ -83,7 +83,7 @@
           <bool>true</bool>
          </property>
          <property name="text">
-          <string>Seleccionar</string>
+          <string>Select</string>
          </property>
         </widget>
        </item>
@@ -114,7 +114,7 @@
        <item>
         <widget class="QPushButton" name="btn_close">
          <property name="text">
-          <string>Tancar</string>
+          <string>Close</string>
          </property>
         </widget>
        </item>
