@@ -44,6 +44,7 @@ def init_plugin():
         return False
 
     # Define imports from Giswater modules
+    this.gw_global_vars = importlib.import_module('.global_vars', package=f'{this.giswater_folder}')
     this.tools_db = importlib.import_module('.tools_db', package=f'{this.giswater_folder}.lib')
     this.tools_log = importlib.import_module('.tools_log', package=f'{this.giswater_folder}.lib')
     this.tools_os = importlib.import_module('.tools_os', package=f'{this.giswater_folder}.lib')
@@ -52,7 +53,6 @@ def init_plugin():
     this.tools_gw = importlib.import_module('.tools_gw', package=f'{this.giswater_folder}.core.utils')
     this.dialog = importlib.import_module('.dialog', package=f'{this.giswater_folder}.core.toolbars')
     this.mincut = importlib.import_module('.mincut', package=f'{this.giswater_folder}.core.shared')
-    this.gw_global_vars = importlib.import_module('.global_vars', package=f'{this.giswater_folder}')
 
     this.tools_log.log_info(f"Giswater plugin folder: {this.giswater_folder_path}")
 
