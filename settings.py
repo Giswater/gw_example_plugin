@@ -13,7 +13,6 @@ from qgis.core import QgsApplication
 # Pointer to the module object instance itself
 this = sys.modules[__name__]
 
-# we can explicitly make assignments on it
 this.giswater_folder = None
 this.giswater_folder_path = None
 this.tools_db = None
@@ -26,20 +25,17 @@ this.dialog = None
 this.gw_global_vars = None
 
 
-def init_plugin():
+def init_plugin(iface):
 
-    if this.giswater_folder is not None:
-        print("Variable giswater_folder already set")
-        return True
-
+    # Find and return Giswater plugin folder path
     this.giswater_folder_path = get_giswater_folder()
-    this.giswater_folder = os.path.basename(this.giswater_folder_path)
-    if this.giswater_folder is None:
-        print("Giswater plugin folder not set")
+    if this.giswater_folder_path is None:
+        iface.messageBar().pushMessage("", "Giswater plugin folder not found", 1, 15)
         return False
 
+    this.giswater_folder = os.path.basename(this.giswater_folder_path)
     if not os.path.exists(this.giswater_folder_path):
-        print(f"Giswater plugin folder not found: {this.giswater_folder_path}")
+        iface.messageBar().pushMessage("", f"Giswater plugin folder not found: {this.giswater_folder_path}", 1, 15)
         return False
 
     # Define imports from Giswater modules
@@ -52,6 +48,8 @@ def init_plugin():
     this.tools_gw = importlib.import_module('.tools_gw', package=f'{this.giswater_folder}.core.utils')
     this.dialog = importlib.import_module('.dialog', package=f'{this.giswater_folder}.core.toolbars')
 
+    # Use Giswater library to both show and log message
+    this.tools_qgis.show_info(f"Giswater example plugin successfully initialized", 15)
     this.tools_log.log_info(f"Giswater plugin folder: {this.giswater_folder_path}")
 
     return True
@@ -73,9 +71,10 @@ def get_giswater_folder(filename_to_find='metadata.txt'):
         pass
 
     list_folders = []
-    if qgis_plugin_root_folder is None:
+    if qgis_plugin_root_folder is not None:
         list_folders.append(qgis_plugin_root_folder)
 
+    # Search Giswater plugin in your profile folder
     profile_folder = QgsApplication.qgisSettingsDirPath()
     profiles_plugins_folder = os.path.join(profile_folder, 'python', 'plugins')
     list_folders.append(profiles_plugins_folder)
@@ -85,8 +84,10 @@ def get_giswater_folder(filename_to_find='metadata.txt'):
         for filename in glob.glob(f"{folder}/**/{filename_to_find}", recursive=True):
             parser = configparser.ConfigParser()
             parser.read(filename)
-            if not parser.has_section('general'): continue
-            if not parser.has_option('general', 'name'): continue
+            if not parser.has_section('general'):
+                continue
+            if not parser.has_option('general', 'name'):
+                continue
             if parser['general']['name'] == 'giswater':
                 giswater_folder_path = os.path.dirname(filename)
                 return giswater_folder_path

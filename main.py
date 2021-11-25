@@ -14,7 +14,6 @@ from qgis.PyQt.QtWidgets import QActionGroup, QDockWidget, QToolBar
 
 from . import global_vars
 from .core.plugin_toolbar import PluginToolbar
-from .core.toolbars import buttons
 from .settings import gw_global_vars, giswater_folder_path, tools_log
 
 
@@ -33,6 +32,7 @@ class GWPluginExample(QObject):
         self.plugin_toolbars = {}
         self.buttons = {}
         self.action = None
+        self.buttons_module = None
 
 
     def unload(self, remove_modules=True):
@@ -52,9 +52,17 @@ class GWPluginExample(QObject):
     def init_plugin(self):
         """ Plugin main initialization function """
 
+        # Check if Giswater plugin exists before attempting imports
+        if giswater_folder_path is None:
+            return
+
+        # Import our toolbar after checking that Giswater plugin exists
+        from .core.toolbars import buttons
+        self.buttons_module = buttons
+
         # Initialize plugin global variables
         self.plugin_dir = os.path.dirname(__file__)
-        self.icon_folder = self.plugin_dir + os.sep + 'icons' + os.sep + 'toolbars' + os.sep
+        self.icon_folder = os.path.join(self.plugin_dir, 'icons', 'toolbars')
         self.plugin_name = self.get_plugin_metadata('name', 'giswater_plugin_example')
         tools_log.log_info(f"Our plugin folder: {self.plugin_dir}")
         tools_log.log_info(f"Our plugin name:   {self.plugin_name}")
@@ -114,9 +122,13 @@ class GWPluginExample(QObject):
                     text = self.settings.value(f"buttons_text/{index_action}")
                     if text is None:
                         text = f'{index_action}_text'
-                    icon_path = self.icon_folder + plugin_toolbar.toolbar_id + os.sep + index_action + ".png"
-                    button = getattr(buttons, button_def)(icon_path, button_def, text, plugin_toolbar.toolbar, ag)
-                    self.buttons[index_action] = button
+                    icon_path = os.path.join(self.icon_folder, plugin_toolbar.toolbar_id, f"{index_action}.png")
+                    if hasattr(self.buttons_module, button_def):
+                        button_class = getattr(self.buttons_module, button_def)
+                        button = button_class(icon_path, button_def, text, plugin_toolbar.toolbar, ag)
+                        self.buttons[index_action] = button
+                    else:
+                        tools_log.log_warning(f"Class '{button_def}' not found in: {self.buttons_module.__file__}")
 
 
     def create_toolbar(self, toolbar_id):

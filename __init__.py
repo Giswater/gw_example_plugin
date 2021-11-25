@@ -7,7 +7,7 @@ def classFactory(iface):
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
-    settings.init_plugin()
+    settings.init_plugin(iface)
     from .main import GWPluginExample
     return GWPluginExample(iface)
 
