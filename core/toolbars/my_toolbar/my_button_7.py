@@ -33,6 +33,7 @@ class MyButton7(dialog.GwAction):
     def clicked_event(self):
 
         self.show_main_dialog()
+        print("Hola mundo")
 
 
     def show_main_dialog(self):
