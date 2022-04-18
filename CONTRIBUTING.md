@@ -1,4 +1,4 @@
-## WELCOME TO GISWATER CONTRIBUTORS GUIDE (GISWATER EXAMPLE PLUGIN)
+## WELCOME TO GISWATER CONTRIBUTORS GUIDE (gw_example_plugin)
 
 This repo is focused to built-up a plugin to show how create QGIS plugins as well as they can be also Giswater plugins.
 
