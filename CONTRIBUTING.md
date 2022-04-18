@@ -2,7 +2,7 @@
 
 This repo is focused to built-up a plugin to show how create QGIS plugins as well as they can be also Giswater plugins.
 
-As well as Giswater is developed in Python (qgis plugin) and PL/SQL(PostgreSQL database) there are three main repositories to manage it (QGIS-PLUGIN, DB-MODEL and DOCS). To contribute you can visit the contributing file of one of the main reposities:
+As well as Giswater is developed in Python (qgis plugin) and PL/SQL(PostgreSQL database) there are three main repositories to manage it (QGIS-PLUGIN, DB-MODEL and DOCS). To contribute you can visit the contributing file of one of the main repositories:
 
 https://github.com/Giswater/docs<br>
 https://github.com/Giswater/giswater_qgis_plugin<br>
