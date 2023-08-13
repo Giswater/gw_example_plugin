@@ -13,7 +13,7 @@ Here after you will find all the information you need to getting started with gw
 	6- Thanks to
 
 ## REQUIREMENTS
-Since gw_example_plugin is a plugin that's buil to work with a Giswater project, you will need to have Giswater plugin installed.
+Since gw_example_plugin is a plugin that's buil to work with a Giswater project, you will need to have Giswater plugin installed. 
 
 For more information about to getting started with Giswater<br> you can visit the README.md file of one the main repositories:
 
