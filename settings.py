@@ -23,6 +23,7 @@ this.tools_qt = None
 this.tools_gw = None
 this.dialog = None
 this.gw_global_vars = None
+this.lib_vars = None
 
 
 def init_plugin(iface):
@@ -39,14 +40,24 @@ def init_plugin(iface):
         return False
 
     # Define imports from Giswater modules
-    this.gw_global_vars = importlib.import_module('.global_vars', package=f'{this.giswater_folder}')
-    this.tools_db = importlib.import_module('.tools_db', package=f'{this.giswater_folder}.lib')
-    this.tools_log = importlib.import_module('.tools_log', package=f'{this.giswater_folder}.lib')
-    this.tools_os = importlib.import_module('.tools_os', package=f'{this.giswater_folder}.lib')
-    this.tools_qgis = importlib.import_module('.tools_qgis', package=f'{this.giswater_folder}.lib')
-    this.tools_qt = importlib.import_module('.tools_qt', package=f'{this.giswater_folder}.lib')
+    try:
+        this.tools_db = importlib.import_module('.tools_db', package=f'{this.giswater_folder}.lib')
+        this.tools_log = importlib.import_module('.tools_log', package=f'{this.giswater_folder}.lib')
+        this.tools_os = importlib.import_module('.tools_os', package=f'{this.giswater_folder}.lib')
+        this.tools_qgis = importlib.import_module('.tools_qgis', package=f'{this.giswater_folder}.lib')
+        this.tools_qt = importlib.import_module('.tools_qt', package=f'{this.giswater_folder}.lib')
+    except ImportError:
+        this.tools_db = importlib.import_module('.tools_db', package=f'{this.giswater_folder}.libs')
+        this.tools_log = importlib.import_module('.tools_log', package=f'{this.giswater_folder}.libs')
+        this.tools_os = importlib.import_module('.tools_os', package=f'{this.giswater_folder}.libs')
+        this.tools_qgis = importlib.import_module('.tools_qgis', package=f'{this.giswater_folder}.libs')
+        this.tools_qt = importlib.import_module('.tools_qt', package=f'{this.giswater_folder}.libs')
+        this.lib_vars = importlib.import_module('.lib_vars', package=f'{this.giswater_folder}.libs')
     this.tools_gw = importlib.import_module('.tools_gw', package=f'{this.giswater_folder}.core.utils')
     this.dialog = importlib.import_module('.dialog', package=f'{this.giswater_folder}.core.toolbars')
+    this.toolbox = importlib.import_module('.toolbox_btn', package=f'{this.giswater_folder}.core.toolbars.utilities')
+    this.task = importlib.import_module('.task', package=f'{this.giswater_folder}.core.threads')
+    this.gw_global_vars = importlib.import_module('.global_vars', package=f'{this.giswater_folder}')
 
     # Use Giswater library to both show and log message
     this.tools_qgis.show_info(f"Giswater example plugin successfully initialized", 15)
